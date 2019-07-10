@@ -2,16 +2,16 @@
   <div class="coupons-page">
     <div class="banner"><img src="../assets/img/coupons/bg_lingquan@2x.png"/></div>
     <div ref="typesWrapper" class="types-wrapper">
-      <div class="wrapper-content">
-        <div class="item" :class="{active: cardType === ''}" @click.stop="setCardType('')">全部</div>
-        <div class="item" :class="{active: cardType === 'CASH'}" @click.stop="setCardType('CASH')">代金券</div>
-        <div class="item" :class="{active: cardType === 'FULL_REDUCTION'}" @click.stop="setCardType('FULL_REDUCTION')">满减券</div>
-        <div class="item" :class="{active: cardType === 'GIFT'}" @click.stop="setCardType('GIFT')">兑换券</div>
-        <div class="item" :class="{active: cardType === 'DISCOUNT'}" @click.stop="setCardType('DISCOUNT')">折扣券</div>
+      <div class="types-wrapper-content">
+        <span class="item" :class="{active: cardType === ''}" @click.stop="setCardType('')">全部</span>
+        <span class="item" :class="{active: cardType === 'CASH'}" @click.stop="setCardType('CASH')">代金券</span>
+        <span class="item" :class="{active: cardType === 'FULL_REDUCTION'}" @click.stop="setCardType('FULL_REDUCTION')">满减券</span>
+        <span class="item" :class="{active: cardType === 'GIFT'}" @click.stop="setCardType('GIFT')">兑换券</span>
+        <span class="item" :class="{active: cardType === 'DISCOUNT'}" @click.stop="setCardType('DISCOUNT')">折扣券</span>
       </div>
     </div>
     <div ref="couponsWrapper" class="coupons-wrapper">
-      <ul class="wrapper-content">
+      <ul class="coupons-wrapper-content">
         <li class="item" v-for="(coupon, couponIndex) in coupons" :key="couponIndex" @click.stop="showCouponDetail(coupon.id)">
           <div class="li_left">
             <div class="coupon_icon">
@@ -289,7 +289,7 @@ export default {
       overflow: hidden;
       z-index: 99;
       background:rgba(255,255,255,1);
-      .wrapper-content {
+      .types-wrapper-content {
         min-width: 410px;
         display: flex;
         justify-content: flex-start;
@@ -299,16 +299,16 @@ export default {
         .item {
           position: relative;
           height:37px;
-          min-width:45px;
+          min-width:50px;
           font-size:15px;
           font-weight:400;
           line-height:37px;
           color:rgba(153,153,153,1);
-          margin-right: 35px;
+          margin-right: 30px;
           /*border-bottom: 3px solid #38A1FF;*/
         }
         .item:first-child {
-          min-width:30px;
+          min-width:35px;
         }
         .active {
           color:rgba(56,161,255,1);
@@ -329,7 +329,7 @@ export default {
       height: 100%;
       padding: 0 10px;
       overflow: hidden;
-      .wrapper-content {
+      .coupons-wrapper-content {
         padding-top: 194px;
         .item{
           position: relative;
