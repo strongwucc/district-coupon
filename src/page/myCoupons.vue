@@ -8,31 +8,38 @@
     <div ref="couponsWrapper" class="coupons-wrapper" v-if="coupons.length > 0">
       <ul class="wrapper-content">
         <li class="item" v-for="(coupon, couponIndex) in coupons" :key="couponIndex" @click.stop="showCouponDetail(coupon.qrcode)">
-          <div class="coupon-info">
-            <div class="left">
-              <img :src="coupon.logo|upload"/>
-              <span class="label">
+          <div class="li_left">
+            <div class="coupon_icon">
+              <div class="title">
+                <span class="currency" v-if="coupon.card_type !== 'DISCOUNT'">￥</span>
+                <span class="number">
+                  <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)|formatMoney(0)}}</template>
+                  <template v-else>{{coupon.reduce_cost|formatMoney(0)}}</template>
+                </span>
+                <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
+              </div>
+              <div class="label">
                 <template v-if="coupon.card_type === 'CASH'">代金券</template>
                 <template v-else-if="coupon.card_type === 'DISCOUNT'">折扣券</template>
                 <template v-else-if="coupon.card_type === 'GIFT'">礼品券</template>
                 <template v-else-if="coupon.card_type === 'FULL_REDUCTION'">满减券</template>
-              </span>
+              </div>
             </div>
-            <div class="middle">
+            <div class="coupon_text">
               <p class="coupon-name">{{coupon.title|longStrFormat(7)}}</p>
-              <p class="use_conditions">{{coupon.description|longStrFormat(9)}}</p>
               <p class="use_conditions">{{coupon.notice|longStrFormat(9)}}</p>
-            </div>
-            <div class="right">
-              <span v-if="coupon.dated === 0 && coupon.use_status === '0'" class="use-btn" @click.stop="showCouponDetail(coupon.qrcode)">立即使用</span>
-              <img v-if="coupon.dated === 0 && coupon.use_status === '1'" class="used-icon" src="../assets/img/my_coupons/label_yishiyong@2x.png"/>
-              <img v-if="coupon.dated === 1" class="expired-icon" src="../assets/img/my_coupons/label_yiguoqi@2x.png"/>
+              <p class="use_conditions">{{coupon.notice|longStrFormat(9)}}</p>
+              <p class="use_conditions">{{coupon.begin_date_time}}-{{coupon.end_date_time}}</p>
             </div>
           </div>
-          <div class="expired-time">
-            <span class="warning" v-if="coupon.dated === 0 && coupon.use_status === '0' && coupon.left_days <= 3 && coupon.left_days >= 0">{{coupon.left_days|expiredNotice}}</span>
-            <span class="normal" v-else>{{coupon.begin_date_time}}-{{coupon.end_date_time}}</span>
+          <div class="l_right">
+            <div v-if="coupon.dated === 0 && coupon.use_status === '0'" class="action yilin" @click.stop="showCouponDetail(coupon.qrcode)">查看详情</div>
+            <img v-if="coupon.dated === 0 && coupon.use_status === '1'" class="used-icon" src="../assets/img/my_coupons/label_yishiyong@2x.png"/>
+            <img v-if="coupon.dated === 1" class="expired-icon" src="../assets/img/my_coupons/label_yiguoqi@2x.png"/>
+            <div class="notice" v-if="coupon.dated === 0 && coupon.use_status === '0' && coupon.left_days <=3 && coupon.left_days >= 0">{{coupon.left_days|expiredNotice}}</div>
           </div>
+          <div class="border-up"></div>
+          <div class="border-down"></div>
         </li>
         <div class="padding" ref="padding">
           <div class="pull-notice" v-show="showLoading === false">
@@ -43,7 +50,7 @@
       </ul>
     </div>
     <div class="no-coupon" v-if="coupons.length === 0 && !showLoading">
-      <img src="../assets/img/my_coupons/states_yhq_kong@2x.png"/>
+      <img src="../assets/img/my_coupons/empty_icon_youhuiquan@2x.png"/>
       <span class="notice">暂时没有优惠券哦</span>
       <span class="btn" v-show="status === 'unused'" @click.stop="$router.push({path: '/coupons'})">去领取中心</span>
     </div>
@@ -216,13 +223,14 @@ export default {
         min-width:30px;
       }
       .active {
-        color:rgba(56,161,255,1);
+        color:#59AF34;
+        font-weight: bold;
       }
       .active:after {
         content: '';
         width: 30px;
         height:3px;
-        background:rgba(56,161,255,1);
+        background:#59AF34;
         border-radius:1.5px;
         position: absolute;
         left: 6.5px;
@@ -230,106 +238,169 @@ export default {
       }
     }
     .coupons-wrapper{
-      background:rgba(242,244,247,1);
+      background:rgba(255,255,255,1);
       padding: 0 10px;
       height: 100%;
       overflow: hidden;
       .wrapper-content {
         padding-top: 44px;
         .item{
-          margin-top: 10.5px;
-          height:127.5px;
-          border-radius: 6px;
+          position: relative;
+          display: flex;
+          width: 100%;
+          height:120px;
           background:rgba(255,255,255,1);
           border:1px solid rgba(0,0,0,0);
-          box-shadow:0px 0px 6.5px rgba(0,0,0,0.1);
-          padding: 15px 19px 0 15px;
-          display: flex;
-          flex-direction: column;
-          .coupon-info {
+          border-radius: 6px;
+          box-shadow:0px 0px 7.5px rgba(0,0,0,0.1);
+          margin-bottom: 10px;
+          .li_left{
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            .left {
+            width: 250.5px;
+            padding: 20px 0px 22px 0px;
+            border-right:1px dashed rgba(221,221,221,1);
+            .coupon_icon{
               position: relative;
-              width: 65px;
-              height: 65px;
-              margin-right: 10px;
-              img {
-                width: 100%;
-                height: 100%;
-              }
-              .label{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 41px;
-                height: 17.5px;
-                background:rgba(51,51,51,1);
-                opacity:0.8;
-                border-radius:2px 2px 2px 0px;
-                font-size: 10px;
-                font-weight:400;
-                line-height:17.5px;
-                text-align: center;
-                color:rgba(255,255,255,1);
-              }
-            }
-            .middle {
-              width: 181px;
-              p {
-                text-align: left;
-              }
-              .coupon-name {
-                height:21px;
-                font-size:15px;
-                font-weight:bold;
-                line-height:21px;
-              }
-              .use_conditions {
-                margin-top: 5.5px;
-                height:16.5px;
-                font-size:12px;
-                font-weight:400;
-                line-height:16.5px;
-                color:rgba(153,153,153,1);
-              }
-            }
-            .right {
-              height: 100%;
               display: flex;
               flex-direction: column;
               justify-content: center;
               align-items: center;
-              .use-btn {
-                width:65px;
-                height:27px;
-                border:1px solid rgba(249,83,73,1);
-                border-radius:13.5px;
-                font-size:12px;
-                font-weight:400;
-                line-height:27px;
-                color:rgba(249,83,73,1);
+              width: 88px;
+              height: 100%;
+              /*margin-right: 5px;*/
+              .title{
+                color: #E04237;
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+                align-items: baseline;
+                .currency {
+                  font-size: 14px;
+                }
+                .number {
+                  font-size: 30px;
+                }
+                .zhe {
+                  font-size: 12px;
+                }
               }
-              img {
-                width: 60px;
-                height: 60px;
+              .label{
+                width: 40px;
+                height: 16px;
+                border:1px solid rgba(204,204,204,1);
+                border-radius:2px;
+                font-size:11px;
+                font-weight:400;
+                line-height:16px;
+                color:rgba(102,102,102,1);
+                opacity:0.99;
+              }
+            }
+            .coupon_text{
+              height: 100%;
+              .coupon-name {
+                height:21px;
+                font-size:16px;
+                font-weight:bold;
+                line-height:21px;
+                color:rgba(51,51,51,1);
+                text-align: left;
+              }
+              .use_conditions{
+                height:16.5px;
+                font-size:11px;
+                font-weight:400;
+                line-height:16.5px;
+                color:rgba(153,153,153,1);
+                margin-top: 5.5px;
+                text-align: left;
+              }
+              .limit {
+                height:16.5px;
+                font-size:11px;
+                font-weight:400;
+                line-height:12px;
+                color:rgba(235,156,87,1);
+                margin-top: 5px;
+                text-align: left;
               }
             }
           }
-          .expired-time {
-            margin-top: 15.5px;
-            padding-top: 8px;
-            height:16.5px;
-            font-size:12px;
-            font-weight:400;
-            line-height:16.5px;
-            color:rgba(153,153,153,1);
-            text-align: left;
-            border-top:1px solid rgba(229,229,229,1);
-            .warning {
-              color:rgba(249,83,73,1);
+          .l_right{
+            position: relative;
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            .money{
+              position: relative;
+              height:28px;
+              font-size:10px;
+              font-weight:400;
+              line-height:28px;
+              color:rgba(51,51,51,1);
+              span {
+                font-size: 20px;
+                color: #F95349;
+              }
             }
+            .action {
+              position: relative;
+              width:65px;
+              height:25px;
+              background:rgba(89,175,52,1);
+              border-radius:15px;
+              text-align: center;
+              line-height: 25px;
+              font-size:12px;
+              font-weight:400;
+              color:rgba(255,255,255,1);
+            }
+            .need-buy {
+              background:rgba(89,175,52,1);
+            }
+            .no-left {
+              background:rgba(221,221,221,1);
+            }
+            .yilin {
+              background:rgba(247,255,243,1);
+              border:1px solid rgba(89,175,52,1);
+              color:rgba(89,175,52,1);
+            }
+            .used-icon, .expired-icon {
+              width: 60px;
+              height: 60px;
+            }
+            .notice {
+              position: relative;
+              height:16.5px;
+              margin-top: 12px;
+              line-height:16.5px;
+              font-size:11px;
+              font-weight:400;
+              color:rgba(224,66,55,1);
+            }
+          }
+          .border-up {
+            position: absolute;
+            top: -10px;
+            left: 242.5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            background:rgba(255,255,255,1);
+            box-shadow:0px -2px 0px rgba(0,0,0,0.1) inset;
+          }
+          .border-down {
+            position: absolute;
+            bottom: -10px;
+            left: 242.5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            background:rgba(255,255,255,1);
+            box-shadow:0px 2px 0px rgba(0,0,0,0.1) inset;
           }
         }
         .padding {
@@ -350,14 +421,14 @@ export default {
       justify-content: center;
       align-items: center;
       img {
-        margin-top: 138px;
-        width: 123.5px;
-        height: 80.5px;
+        margin-top: 101px;
+        width: 170px;
+        height: 170px;
       }
       .notice {
         margin-top: 44px;
         height:18.5px;
-        font-size:13px;
+        font-size:14px;
         font-weight:400;
         line-height:18.5px;
         color:rgba(153,153,153,1);

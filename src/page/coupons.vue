@@ -1,12 +1,12 @@
 <template>
   <div class="coupons-page">
-    <div class="banner"><img src="../assets/img/coupons/bg_lingquan@2x.png"/></div>
+    <!--<div class="banner"><img src="../assets/img/coupons/bg_lingquan@2x.png"/></div>-->
     <div ref="typesWrapper" class="types-wrapper">
       <div class="types-wrapper-content">
         <span class="item" :class="{active: cardType === ''}" @click.stop="setCardType('')">全部</span>
         <span class="item" :class="{active: cardType === 'CASH'}" @click.stop="setCardType('CASH')">代金券</span>
         <span class="item" :class="{active: cardType === 'FULL_REDUCTION'}" @click.stop="setCardType('FULL_REDUCTION')">满减券</span>
-        <span class="item" :class="{active: cardType === 'GIFT'}" @click.stop="setCardType('GIFT')">兑换券</span>
+        <!--<span class="item" :class="{active: cardType === 'GIFT'}" @click.stop="setCardType('GIFT')">兑换券</span>-->
         <span class="item" :class="{active: cardType === 'DISCOUNT'}" @click.stop="setCardType('DISCOUNT')">折扣券</span>
       </div>
     </div>
@@ -15,31 +15,34 @@
         <li class="item" v-for="(coupon, couponIndex) in coupons" :key="couponIndex" @click.stop="showCouponDetail(coupon.id)">
           <div class="li_left">
             <div class="coupon_icon">
-              <img :src="coupon.logo|upload">
-              <span class="label">
+              <div class="title">
+                <span class="currency" v-if="coupon.card_type !== 'DISCOUNT'">￥</span>
+                <span class="number">
+                  <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)|formatMoney(0)}}</template>
+                  <template v-else>{{coupon.reduce_cost|formatMoney(0)}}</template>
+                </span>
+                <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
+              </div>
+              <div class="label">
                 <template v-if="coupon.card_type === 'CASH'">代金券</template>
-              <template v-else-if="coupon.card_type === 'DISCOUNT'">折扣券</template>
-              <template v-else-if="coupon.card_type === 'GIFT'">礼品券</template>
-              <template v-else-if="coupon.card_type === 'FULL_REDUCTION'">满减券</template>
-              </span>
+                <template v-else-if="coupon.card_type === 'DISCOUNT'">折扣券</template>
+                <template v-else-if="coupon.card_type === 'GIFT'">礼品券</template>
+                <template v-else-if="coupon.card_type === 'FULL_REDUCTION'">满减券</template>
+              </div>
             </div>
             <div class="coupon_text">
               <p class="coupon-name">{{coupon.title|longStrFormat(7)}}</p>
-              <p class="use_conditions">{{coupon.description|longStrFormat(9)}}</p>
               <p class="use_conditions">{{coupon.notice|longStrFormat(9)}}</p>
-              <p class="limit">每人限领{{coupon.get_limit}}张</p>
+              <p class="use_conditions">{{coupon.notice|longStrFormat(9)}}</p>
+              <p class="limit">每人限领{{coupon.get_limit}}张<template v-if="1">，每日限领1张</template></p>
             </div>
           </div>
           <div class="l_right">
-            <div class="got" v-if="coupon.user_count > 0">
-              <img v-if="coupon.is_buy === '2'" src="../assets/img/coupons/tab_yigou@2x.png"/>
-              <img src="../assets/img/coupons/tab_yilin@2x.png" v-else/>
-            </div>
             <div class="money" v-if="coupon.is_buy === '2'">售价：<span>{{coupon.sale_price|formatMoney}}</span>元</div>
-            <div v-if="coupon.user_count > 0 && coupon.user_count >= coupon.get_limit" class="action" :class="{'need-buy': coupon.is_buy === '2'}" @click.stop="showCoupon()">立即使用</div>
+            <div v-if="coupon.user_count > 0 && coupon.user_count >= coupon.get_limit" class="action yilin" :class="{'need-buy': coupon.is_buy === '2'}" @click.stop="showCoupon()">查看详情</div>
             <div v-else-if="coupon.is_buy === '2' && coupon.quantity > 0" class="action" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}" @click.stop="receive(coupon.id, couponIndex)">购买</div>
             <div v-else-if="coupon.is_buy === '1' && coupon.quantity > 0" class="action" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}" @click.stop="receive(coupon.id, couponIndex)">领取</div>
-            <div v-else-if="coupon.quantity <= 0" class="action" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}">已领完</div>
+            <div v-else-if="coupon.quantity <= 0" class="action" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}">已售罄</div>
             <div class="notice" v-if="coupon.quantity > 999">剩余<span>999</span>张</div>
             <div class="notice" v-else-if="coupon.quantity > 0 && coupon.quantity <= 999">剩余<span>{{coupon.quantity}}</span>张</div>
           </div>
@@ -99,9 +102,6 @@ export default {
   },
   mounted () {
     this.getCoupons()
-    this.$nextTick(() => {
-      this.initTypesScroll()
-    })
   },
   destroyed () {
   },
@@ -134,21 +134,6 @@ export default {
           })
         }
       })
-    },
-    // 初始化滚动
-    initTypesScroll () {
-      if (!this.$refs.typesWrapper) {
-        return
-      }
-      this.$refs.typesWrapper.style.minWidth = `${getRect(this.$refs.typesWrapper).width + 1}px`
-      let options = {
-        startX: 0,
-        click: true,
-        scrollX: true,
-        scrollY: false,
-        eventPassthrough: 'vertical'
-      }
-      this.typeScroll = new BScroll(this.$refs.typesWrapper, options)
     },
     // 初始化滚动
     initScroll () {
@@ -268,60 +253,44 @@ export default {
   .coupons-page {
     height: 100%;
     background:rgba(255,255,255,1);
-    .banner {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 130px;
-      z-index: 99;
-      img {
-        width: 100%;
-        height: 100%;
-      }
-    }
     .types-wrapper {
       position: fixed;
       left: 0;
-      top: 130px;
-      height: 49px;
+      top: 0;
+      height: 44px;
       width: 375px;
-      overflow: hidden;
       z-index: 99;
       background:rgba(255,255,255,1);
       .types-wrapper-content {
-        min-width: 410px;
         display: flex;
-        justify-content: flex-start;
+        justify-content: space-between;
+        align-items: center;
         height: 100%;
-        padding-top: 12px;
-        padding-left: 25px;
+        /*padding-top: 12px;*/
+        padding: 0 25px;
         .item {
           position: relative;
-          height:37px;
           min-width:50px;
           font-size:15px;
           font-weight:400;
-          line-height:37px;
-          color:rgba(153,153,153,1);
-          margin-right: 30px;
-          /*border-bottom: 3px solid #38A1FF;*/
+          /*line-height:37px;*/
+          color:#999999;
         }
         .item:first-child {
           min-width:35px;
         }
         .active {
-          color:rgba(56,161,255,1);
+          color:#59AF34;
         }
         .active:after {
           content: '';
           width: 100%;
           height:3px;
-          background:rgba(56,161,255,1);
+          background:#59AF34;
           border-radius:1.5px;
           position: absolute;
           left: 0;
-          top:34px;
+          top:31px;
         }
       }
     }
@@ -330,12 +299,12 @@ export default {
       padding: 0 10px;
       overflow: hidden;
       .coupons-wrapper-content {
-        padding-top: 194px;
+        padding-top: 60px;
         .item{
           position: relative;
           display: flex;
           width: 100%;
-          height:117px;
+          height:120px;
           background:rgba(255,255,255,1);
           border:1px solid rgba(0,0,0,0);
           border-radius: 6px;
@@ -344,52 +313,50 @@ export default {
           .li_left{
             display: flex;
             width: 250.5px;
-            padding: 20px 11.5px 22px 15px;
+            padding: 20px 0px 22px 0px;
             border-right:1px dashed rgba(221,221,221,1);
             .coupon_icon{
-              /*position: relative;*/
-              /*width: 50px;*/
-              /*height: 44px;*/
-              /*margin-right: 20px;*/
-              /*margin-top: 20.5px;*/
-              /*font-size:12px;*/
-              /*font-weight:400;*/
-              /*line-height:44px;*/
-              /*color:rgba(255,111,96,1);*/
-              /*background:linear-gradient(141deg,rgba(255,237,235,1) 0%,rgba(255,215,209,1) 100%);*/
-              /*box-shadow:0px 4px 10px rgba(212,105,91,0.1);*/
-              /*border-radius:5px;*/
-              /*text-align: center;*/
               position: relative;
-              width: 100px;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              align-items: center;
+              width: 88px;
               height: 100%;
-              margin-right: 5px;
-              img{
-                width: 75px;
-                height: 75px;
-                border-radius: 3px;
+              /*margin-right: 5px;*/
+              .title{
+                color: #E04237;
+                font-weight: bold;
+                display: flex;
+                justify-content: center;
+                align-items: baseline;
+                .currency {
+                  font-size: 14px;
+                }
+                .number {
+                  font-size: 30px;
+                }
+                .zhe {
+                  font-size: 12px;
+                }
               }
               .label{
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 41px;
-                height: 17.5px;
-                background:rgba(51,51,51,1);
-                opacity:0.8;
-                border-radius:2px 2px 2px 0px;
-                font-size: 10px;
+                width: 40px;
+                height: 16px;
+                border:1px solid rgba(204,204,204,1);
+                border-radius:2px;
+                font-size:11px;
                 font-weight:400;
-                line-height:17.5px;
-                text-align: center;
-                color:rgba(255,255,255,1);
+                line-height:16px;
+                color:rgba(102,102,102,1);
+                opacity:0.99;
               }
             }
             .coupon_text{
               height: 100%;
               .coupon-name {
                 height:21px;
-                font-size:15px;
+                font-size:16px;
                 font-weight:bold;
                 line-height:21px;
                 color:rgba(51,51,51,1);
@@ -397,7 +364,7 @@ export default {
               }
               .use_conditions{
                 height:16.5px;
-                font-size:12px;
+                font-size:11px;
                 font-weight:400;
                 line-height:16.5px;
                 color:rgba(153,153,153,1);
@@ -406,10 +373,10 @@ export default {
               }
               .limit {
                 height:16.5px;
-                font-size:12px;
+                font-size:11px;
                 font-weight:400;
                 line-height:12px;
-                color:rgba(91,158,219,1);
+                color:rgba(235,156,87,1);
                 margin-top: 5px;
                 text-align: left;
               }
@@ -417,7 +384,7 @@ export default {
           }
           .l_right{
             position: relative;
-            width: 104.5px;
+            width: 100px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -437,26 +404,31 @@ export default {
             .action {
               position: relative;
               width:65px;
-              height:27px;
-              background:linear-gradient(90deg,rgba(255,164,103,1) 0%,rgba(249,80,72,1) 100%);
+              height:25px;
+              background:rgba(89,175,52,1);
               border-radius:15px;
               text-align: center;
-              line-height: 27px;
+              line-height: 25px;
               font-size:12px;
               font-weight:400;
               color:rgba(255,255,255,1);
             }
             .need-buy {
-              background:linear-gradient(90deg,rgba(255,126,126,1) 0%,rgba(223,61,61,1) 100%);
+              background:rgba(89,175,52,1);
             }
             .no-left {
               background:rgba(221,221,221,1);
+            }
+            .yilin {
+              background:rgba(247,255,243,1);
+              border:1px solid rgba(89,175,52,1);
+              color:rgba(89,175,52,1);
             }
             .notice {
               position: relative;
               height:16.5px;
               font-size:12px;
-              margin-top: 5px;
+              margin-top: 12px;
               font-weight:500;
               line-height:16.5px;
               color:rgba(153,153,153,1);
@@ -466,20 +438,11 @@ export default {
                 color: #F95349;
               }
             }
-            .got {
-              position: absolute;
-              top: 0;
-              right: 0;
-              img {
-                width: 57.5px;
-                height: 50px;
-              }
-            }
           }
           .border-up {
             position: absolute;
             top: -10px;
-            left: 240.5px;
+            left: 242.5px;
             width: 16px;
             height: 16px;
             border-radius: 8px;
@@ -489,7 +452,7 @@ export default {
           .border-down {
             position: absolute;
             bottom: -10px;
-            left: 240.5px;
+            left: 242.5px;
             width: 16px;
             height: 16px;
             border-radius: 8px;
@@ -501,7 +464,7 @@ export default {
           height: 69px;
           .pull-notice {
             height: 69px;
-            line-height: 69px;
+            line-height: 50px;
             font-size:12px;
             font-weight:400;
             color:rgba(204,204,204,1);

@@ -2,26 +2,19 @@
   <div id="app">
     <router-view v-if="isRouterAlive" />
     <div class="tabbar" v-show="showTabbar">
-      <div class="tabbar-item" @click.stop="$router.push({name: 'home'})">
+      <div class="tabbar-item" @click.stop="$router.push({name: 'coupons'})">
         <div class="icon">
-          <img v-if="routeName === 'home'" src="./assets/img/base/buttom_shouye_press@2x.png"/>
-          <img src="./assets/img/base/buttom_shouye_normal@2x.png" v-else/>
+          <img v-if="routeName === 'coupons'" src="./assets/img/base/buttom_lingquan_press@2x.png"/>
+          <img src="./assets/img/base/buttom_lingquan_normal@2x.png" v-else/>
         </div>
-        <div class="txt" :class="{active: routeName === 'home'}">首页</div>
+        <div class="txt" :class="{active: routeName === 'coupons'}">领券中心</div>
       </div>
-      <div class="tabbar-item" @click.stop="$router.push({name: 'merchant'})">
+      <div class="tabbar-item" @click.stop="$router.push({name: 'my_coupons'})">
         <div class="icon">
-          <img v-if="routeName === 'merchant'" src="./assets/img/base/buttom_shanghu_press@2x.png"/>
-          <img src="./assets/img/base/buttom_shanghu_normal@2x.png" v-else/>
+          <img v-if="routeName === 'my_coupons'" src="./assets/img/base/buttom_mycard_press@2x.png"/>
+          <img src="./assets/img/base/buttom_mycard_normal@2x.png" v-else/>
         </div>
-        <div class="txt" :class="{active: routeName === 'merchant'}">商户</div>
-      </div>
-      <div class="tabbar-item" @click.stop="$router.push({name: 'center'})">
-        <div class="icon">
-          <img v-if="routeName === 'center'" src="./assets/img/base/buttom_huiyuan_press@2x.png"/>
-          <img src="./assets/img/base/buttom_huiyuan_normal@2x.png" v-else/>
-        </div>
-        <div class="txt" :class="{active: routeName === 'center'}">会员</div>
+        <div class="txt" :class="{active: routeName === 'my_coupons'}">我的券包</div>
       </div>
     </div>
   </div>
@@ -48,7 +41,7 @@ export default {
   },
   computed: {
     showTabbar: function () {
-      return ['home', 'merchant', 'center'].indexOf(this.routeName) >= 0 ? true : false
+      return ['coupons', 'my_coupons'].indexOf(this.routeName) >= 0
     }
   },
   methods: {
@@ -82,13 +75,13 @@ export default {
       bottom: 0;
       width: 100%;
       height: 49px;
-      padding: 0px 45px;
       background:rgba(255,255,255,1);
       box-shadow:0px -1px 5px rgba(0,0,0,0.1);
       z-index: 99;
       .tabbar-item {
         /*padding-top: 6px;*/
         height: 100%;
+        width: 50%;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
@@ -109,12 +102,15 @@ export default {
           margin-top: 1px;
           height:14px;
           font-size:10px;
-          font-weight:bold;
+          font-weight:400;
           line-height:12px;
           text-align: center;
         }
         .active {
-          color:rgba(33,149,252,1);
+          color:#59AF34;
+        }
+        &:first-child {
+          border-right: 1px solid rgba(229,229,229,1);
         }
       }
     }

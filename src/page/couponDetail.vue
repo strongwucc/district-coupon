@@ -3,13 +3,21 @@
     <div class="content" ref="content">
       <div class="left-count">剩余<span>{{coupon.quantity}}</span>张</div>
       <div class="title">{{coupon.title}}</div>
+      <div class="face-value">
+        <span class="currency" v-if="coupon.card_type !== 'DISCOUNT'">￥</span>
+        <span class="number">
+          <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)|formatMoney(0)}}</template>
+          <template v-else>{{coupon.reduce_cost|formatMoney(0)}}</template>
+        </span>
+        <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
+      </div>
       <div class="description">{{coupon.description}}</div>
-      <div class="btn" v-if="coupon.user_count > 0 && coupon.user_count >= coupon.get_limit" :class="{'need-buy': coupon.is_buy === '2'}" @click.stop="showCoupon">立即使用</div>
+      <div class="btn" v-if="coupon.user_count > 0 && coupon.user_count >= coupon.get_limit" :class="{'yilin': true, 'need-buy': coupon.is_buy === '2'}" @click.stop="showCoupon">前往我的券包</div>
       <div class="btn" v-else-if="coupon.is_buy === '2' && coupon.quantity > 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}" @click.stop="receive(coupon.id)">立即购买</div>
-      <div class="btn" v-else-if="coupon.is_buy === '1' && coupon.quantity > 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}" @click.stop="receive(coupon.id)">立即领取</div>
-      <div class="btn" v-else-if="coupon.quantity <= 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}">已领完</div>
-      <div class="get-limit">每人限购{{coupon.get_limit}}张</div>
-      <div class="expire-time">有效期：{{coupon.expire_date}}</div>
+      <div class="btn" v-else-if="coupon.is_buy === '1' && coupon.quantity > 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}" @click.stop="receive(coupon.id)">我要领</div>
+      <div class="btn" v-else-if="coupon.quantity <= 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}">已售罄</div>
+      <div class="get-limit">每人限购{{coupon.get_limit}}张<template v-if="1">，每日限领1张</template></div>
+      <div class="expire-time"><span>有效期：</span><span>{{coupon.expire_date}}</span></div>
       <div class="item notice">
         <div class="notice-title" @click.stop="showNotice = true;resetHeight()">
           <span class="txt">使用须知</span>
@@ -20,32 +28,32 @@
       </div>
       <div class="item store">
         <div class="notice-title">
-          <span class="txt">适用门店</span>
+          <span class="txt">适用商户</span>
           <img src="../assets/img/base/icon_arrow_down@2x.png"/>
         </div>
       </div>
     </div>
-    <div class="circles">
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-      <div class="circle"></div>
-    </div>
+    <!--<div class="circles">-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+      <!--<div class="circle"></div>-->
+    <!--</div>-->
   </div>
 </template>
 
@@ -136,7 +144,7 @@ export default {
       })
     },
     showCoupon () {
-      this.$router.push('/coupon_show')
+      this.$router.push('/my_coupons')
     },
     resetHeight () {
       this.$nextTick(() => {
@@ -166,13 +174,14 @@ export default {
   }
   .coupon-detail-page {
     height: 100%;
-    background:rgba(82,173,255,1);
+    background:rgba(255,255,255,1);
     padding: 25px 15px;
     color:rgba(51,51,51,1);
     .content {
       position: relative;
-      width:344.5px;
+      width:345px;
       background:rgba(255,255,255,1);
+      box-shadow:0px 0px 20px rgba(89,175,52,0.25);
       padding: 17.5px 20px;
       display: flex;
       flex-direction: column;
@@ -193,46 +202,74 @@ export default {
       .title {
         margin-top: 14.5px;
         height:31px;
-        font-size:22px;
-        font-weight:bold;
+        font-size:20px;
+        font-weight:400;
         line-height:31px;
+      }
+      .face-value {
+        margin-top: 15px;
+        color: #E04237;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        .currency {
+          font-size: 20px;
+        }
+        .number {
+          font-size: 40px;
+        }
+        .zhe {
+          font-size: 20px;
+        }
       }
       .description {
         margin-top: 14.5px;
         width:242.5px;
         font-size:13px;
         font-weight:400;
-        line-height:39px;
+        /*line-height:39px;*/
         color:rgba(153,153,153,1);
         text-align: center;
       }
       .btn {
-        margin-top: 30px;
-        height:44px;
-        background:linear-gradient(90deg,rgba(255,77,20,1) 0%,rgba(255,126,22,1) 100%);
+        margin-top: 20px;
+        width:295px;
+        height:40px;
+        background:rgba(89,175,52,1);
         border-radius:22px;
-        padding: 0px 56px 0px 60px;
-        height:44px;
         font-size:16px;
         font-weight:400;
-        line-height:44px;
+        line-height:40px;
         color:rgba(255,255,255,1);
       }
       .no-left {
         background:rgba(221,221,221,1);
       }
-      .get-limit, .expire-time {
-        margin-top: 34.5px;
-        height:18.5px;
+      .yilin {
+        background:rgba(247,255,243,1);
+        border:1px solid rgba(89,175,52,1);
+        color:rgba(89,175,52,1);
+      }
+      .get-limit {
+        margin-top: 19px;
         font-size:13px;
         font-weight:400;
-        line-height:18.5px;
-        color:rgba(102,102,102,1);
-        width: 100%;
-        text-align: left;
+        color:rgba(235,156,87,1);
       }
       .expire-time {
-        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 30px;
+        height:44px;
+        font-size:13px;
+        font-weight:400;
+        line-height:44px;
+        color:rgba(153,153,153,1);
+        width: 100%;
+        text-align: left;
+        border-top:1px solid rgba(229,229,229,1);
+        border-bottom:1px solid rgba(229,229,229,1);
       }
       .item {
         width: 100%;
@@ -274,48 +311,45 @@ export default {
           }
         }
       }
-      .notice {
-        margin-top: 15.5px;
-        border-top:1px dashed rgba(229,229,229,1);
-      }
       .store {
         margin-bottom: 15px;
       }
     }
-    .circles {
-      position: relative;
-      top: -4px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 20px;
-      .circle {
-        width: 10px;
-        height: 10px;
-        border-radius: 5px;
-        background:rgba(82,173,255,1);
-      }
-    }
-    .content:before {
-      content: '';
-      background:rgba(82,173,255,1);
-      width: 25px;
-      height: 25px;
-      border-radius: 12.5px;
-      position: absolute;
-      top: 135px;
-      left: -12.5px;
-    }
-    .content:after {
-      content: '';
-      background:rgba(82,173,255,1);
-      width: 25px;
-      height: 25px;
-      border-radius: 12.5px;
-      position: absolute;
-      top: 135px;
-      right: -12.5px;
-    }
+    /*.circles {*/
+      /*position: relative;*/
+      /*top: -4px;*/
+      /*width: 100%;*/
+      /*display: flex;*/
+      /*justify-content: space-between;*/
+      /*padding: 0 20px;*/
+      /*.circle {*/
+        /*width: 10px;*/
+        /*height: 10px;*/
+        /*border-radius: 5px;*/
+        /*background:rgba(89,175,52,1);*/
+      /*}*/
+    /*}*/
+    /*.content:before {*/
+      /*content: '';*/
+      /*background:rgba(255,255,255,1);*/
+      /*box-shadow:0px 0px 20px rgba(89,175,52,0.1) inset;*/
+      /*width: 12.5px;*/
+      /*height: 25px;*/
+      /*border-radius: 0 12.5px 12.5px 0;*/
+      /*position: absolute;*/
+      /*top: 135px;*/
+      /*left: 0px;*/
+    /*}*/
+    /*.content:after {*/
+      /*content: '';*/
+      /*background:rgba(89,175,52,1);*/
+      /*width: 25px;*/
+      /*height: 25px;*/
+      /*border-radius: 12.5px;*/
+      /*position: absolute;*/
+      /*top: 135px;*/
+      /*right: -12.5px;*/
+    /*}*/
     /*.content:after {*/
       /*content: '';*/
       /*background:rgba(82,173,255,1);*/
