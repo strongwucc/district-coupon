@@ -16,7 +16,7 @@
       <div class="btn" v-else-if="coupon.is_buy === '2' && coupon.quantity > 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}" @click.stop="receive(coupon.id)">立即购买</div>
       <div class="btn" v-else-if="coupon.is_buy === '1' && coupon.quantity > 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}" @click.stop="receive(coupon.id)">我要领</div>
       <div class="btn" v-else-if="coupon.quantity <= 0" :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}">已售罄</div>
-      <div class="get-limit">每人限购{{coupon.get_limit}}张<template v-if="1">，每日限领1张</template></div>
+      <div class="get-limit">每人限购{{coupon.get_limit}}张<template v-if="coupon.day_get_limit > 0">，每日限领{{coupon.day_get_limit}}张</template></div>
       <div class="expire-time"><span>有效期：</span><span>{{coupon.expire_date}}</span></div>
       <div class="item notice">
         <div class="notice-title" @click.stop="showNotice = !showNotice;resetHeight()">
