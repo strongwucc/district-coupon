@@ -33,8 +33,11 @@
             <div class="coupon_text">
               <p class="coupon-name">{{coupon.title|longStrFormat(7)}}</p>
               <p class="use_conditions">{{coupon.notice|longStrFormat(9)}}</p>
-              <p class="use_conditions">{{coupon.notice|longStrFormat(9)}}</p>
-              <p class="limit">每人限领{{coupon.get_limit}}张<template v-if="1">，每日限领1张</template></p>
+              <p class="use_conditions">
+                <template v-if="coupon.merchants.length > 0">{{coupon.merchants[0].mer_name|longStrFormat(9)}}</template>
+                <template v-else>适用所有商户</template>
+              </p>
+              <p class="limit">每人限领{{coupon.get_limit}}张<template v-if="coupon.day_get_limit > 0">，每日限领{{coupon.day_get_limit}}张</template></p>
             </div>
           </div>
           <div class="l_right">

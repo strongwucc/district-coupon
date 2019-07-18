@@ -24,9 +24,18 @@
         <div v-show="showNotice" class="notice-content">{{coupon.notice}}</div>
       </div>
       <div class="item store">
-        <div class="notice-title">
-          <span class="txt">适用门店</span>
-          <img src="../assets/img/base/icon_arrow_down@2x.png"/>
+        <div class="notice-title" @click.stop="showMerchants = !showMerchants;resetHeight()">
+          <span class="txt">适用商户</span>
+          <img v-show="!showMerchants" src="../assets/img/base/icon_arrow_down@2x.png"/>
+          <img v-show="showMerchants" src="../assets/img/base/icon_arrow_up@2x.png"/>
+        </div>
+        <div v-show="showMerchants" class="notice-content">
+          <div class="merchant" v-for="(merchant, merchantIndex) in coupon.merchants" :key="merchantIndex">
+            <div class="mer-name">{{merchant.mer_name}}</div>
+            <div class="open-time">营业时间：{{merchant.open_time}}</div>
+            <div class="addr">地址：{{merchant.mer_addr}}</div>
+          </div>
+          <div class="no-merchant" v-if="coupon.merchants.length === 0">适用所有商户</div>
         </div>
       </div>
     </div>
@@ -68,7 +77,8 @@ export default {
       code: '',
       coupon: {},
       showNotice: false,
-      showOrder: false
+      showOrder: false,
+      showMerchants: false
     }
   },
   computed: {
@@ -217,6 +227,24 @@ export default {
           line-height:17px;
           color:rgba(102,102,102,1);
           text-align: left;
+          padding-bottom: 15.5px;
+          .mer-name {
+            font-size:13px;
+            font-weight:bold;
+            color:rgba(51,51,51,1);
+            margin-bottom: 11.5px;
+          }
+          .open-time, .addr {
+            font-size:13px;
+            font-weight:400;
+            color:rgba(102,102,102,1);
+          }
+          .open-time {
+            margin-bottom: 5px;
+          }
+          .addr {
+            margin-bottom: 15.5px;
+          }
         }
         .order-content {
           font-size:13px;
