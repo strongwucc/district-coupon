@@ -15,6 +15,7 @@ export default {
   couponDetail: 'coupon/detail',
   couponShow: 'coupon/show',
   authorizations: 'etone/authorizations',
+  autologin: 'openid/authorizations',
   userInfo: 'user',
   smsCode: 'verification_codes',
   bindMobile: 'user/bind',

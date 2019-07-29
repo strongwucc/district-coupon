@@ -13,7 +13,7 @@
               <div class="title">
                 <span class="currency" v-if="coupon.card_type !== 'DISCOUNT'">￥</span>
                 <span class="number">
-                  <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)|formatMoney(0)}}</template>
+                  <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)}}</template>
                   <template v-else>{{coupon.reduce_cost|formatMoney(0)}}</template>
                 </span>
                 <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
@@ -252,7 +252,7 @@ export default {
           background:rgba(255,255,255,1);
           border:1px solid rgba(0,0,0,0);
           border-radius: 6px;
-          box-shadow:0px 0px 7.5px rgba(0,0,0,0.1);
+          box-shadow:0px 0px 34px rgba(0,0,0,0.1);
           margin-bottom: 10px;
           .li_left{
             display: flex;

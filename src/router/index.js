@@ -18,7 +18,7 @@ export default new Router({
     },
 
     {
-      path: '/coupons',
+      path: '/coupons/:openId?',
       name: 'coupons',
       component: Coupons,
       meta: {

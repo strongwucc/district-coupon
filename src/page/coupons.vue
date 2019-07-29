@@ -18,7 +18,7 @@
               <div class="title">
                 <span class="currency" v-if="coupon.card_type !== 'DISCOUNT'">￥</span>
                 <span class="number">
-                  <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)|formatMoney(0)}}</template>
+                  <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)}}</template>
                   <template v-else>{{coupon.reduce_cost|formatMoney(0)}}</template>
                 </span>
                 <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
@@ -68,6 +68,7 @@ import BScroll from 'better-scroll'
 import { getRect } from '../../src/assets/js/dom'
 import { LoadMore } from 'vux'
 import { baseRedirectUrl, appId } from '../../src/config/env'
+import Valid from '../utils/valid'
 export default {
   name: 'coupons',
   components: { LoadMore },
@@ -84,7 +85,8 @@ export default {
       pullUp: true,
       showLoading: false,
       scrolling: false,
-      posting: false
+      posting: false,
+      openId: ''
     }
   },
   computed: {
@@ -102,8 +104,12 @@ export default {
   watch: {
   },
   created () {
+    if (this.$route.params.openId) {
+      this.openId = this.$route.params.openId
+    }
   },
   mounted () {
+    this.autoLogin()
     this.getCoupons()
   },
   destroyed () {
@@ -134,6 +140,22 @@ export default {
         } else {
           this.$nextTick(() => {
             this.initScroll()
+          })
+        }
+      })
+    },
+    autoLogin () {
+      if (this.openId === '') {
+        return false
+      }
+      this.$http.post(this.API.autologin, {openId: this.openId}).then(res => {
+        if (res.access_token) {
+          localStorage.setItem('access_token', res.access_token)
+        } else {
+          this.$vux.toast.show({
+            type: 'text',
+            text: res.message ? '<span style="font-size: 14px">' + res.message + '</span>' : '<span style="font-size: 14px">登录失败</span>',
+            position: 'middle'
           })
         }
       })
@@ -197,13 +219,15 @@ export default {
               text: '<span style="font-size: 14px">未登录</span>',
               position: 'middle'
             })
-            setTimeout(() => {
-              let redirect = this.$router.currentRoute.fullPath
-              let redirectUri = baseRedirectUrl + '/wechat.html'
-              // let oauthUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&response_type=code&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect) + '#wechat_redirect'
-              let oauthUrl = 'http://wxgw.yklsh.etonepay.com/authorize?etone_id=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect)
-              window.location.href = oauthUrl
-            }, 2000)
+            if (Valid.check_weixin()) {
+              setTimeout(() => {
+                let redirect = this.$router.currentRoute.fullPath
+                let redirectUri = baseRedirectUrl + '/wechat.html'
+                // let oauthUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&response_type=code&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect) + '#wechat_redirect'
+                let oauthUrl = 'http://wxgw.yklsh.etonepay.com/authorize?etone_id=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect)
+                window.location.href = oauthUrl
+              }, 2000)
+            }
             return false
           } else {
             let message = res.message ? res.message : '未知错误'

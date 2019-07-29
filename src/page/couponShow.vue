@@ -5,7 +5,7 @@
       <div class="face-value">
         <span class="currency" v-if="coupon.card_type !== 'DISCOUNT'">￥</span>
         <span class="number">
-          <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)|formatMoney(0)}}</template>
+          <template v-if="coupon.card_type === 'DISCOUNT'">{{((100 - coupon.discount) / 10)}}</template>
           <template v-else>{{coupon.reduce_cost|formatMoney(0)}}</template>
         </span>
         <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
@@ -14,7 +14,14 @@
       <div class="use-notice">
         请扫描商家付款二维码使用优惠券
       </div>
-      <div class="expire-time"><span>有效期：</span><span>{{coupon.begin_date_time}}-{{coupon.end_date_time}}</span></div>
+      <div class="limit-time">
+        <div class="expire-time"><span>有效期：</span><span>{{coupon.begin_date_time}}-{{coupon.end_date_time}}</span></div>
+        <div class="days-weeks">
+          <span class="label">可用时间：</span>
+          <span class="txt" v-if="coupon.limit_days_and_weeks.days !== '' || coupon.limit_days_and_weeks.weeks !== ''">{{coupon.limit_days_and_weeks.weeks}}<template v-if="coupon.limit_days_and_weeks.days">；</template>{{coupon.limit_days_and_weeks.days}}</span>
+          <span class="txt" v-else>有效期内任何时间都可用</span>
+        </div>
+      </div>
       <div class="item notice is-first">
         <div class="notice-title" @click.stop="showNotice = !showNotice;resetHeight()">
           <span class="txt">使用须知</span>
@@ -186,19 +193,32 @@ export default {
         font-weight:400;
         color:rgba(89,175,52,1);
       }
-      .expire-time {
+      .limit-time {
+        margin-top: 30px;
         display: flex;
-        justify-content: space-between;
-        margin-top: 42px;
-        height:44px;
-        font-size:13px;
-        font-weight:400;
-        line-height:44px;
-        color:rgba(102,102,102,1);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         width: 100%;
-        text-align: left;
         border-top:1px solid rgba(229,229,229,1);
         border-bottom:1px solid rgba(229,229,229,1);
+        .expire-time, .days-weeks {
+          margin-top: 15px;
+          display: flex;
+          justify-content: space-between;
+          font-size:13px;
+          font-weight:400;
+          color:rgba(153,153,153,1);
+          width: 100%;
+          text-align: left;
+        }
+        .days-weeks {
+          margin-bottom: 15px;
+          .txt {
+            width: 157.5px;
+            text-align: right;
+          }
+        }
       }
       .item {
         width: 100%;
