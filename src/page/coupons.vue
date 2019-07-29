@@ -32,7 +32,7 @@
             </div>
             <div class="coupon_text">
               <p class="coupon-name">{{coupon.title|longStrFormat(7)}}</p>
-              <p class="use_conditions">{{coupon.notice|longStrFormat(9)}}</p>
+              <p class="use_conditions">{{coupon.description|longStrFormat(9)}}</p>
               <p class="use_conditions">
                 <template v-if="coupon.merchants.length > 0">{{coupon.merchants[0].mer_name|longStrFormat(9)}}</template>
                 <template v-else>适用所有商户</template>
