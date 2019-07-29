@@ -11,7 +11,10 @@
         <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
       </div>
       <div class="description">{{coupon.description}}</div>
-      <div class="use-notice">
+      <div class="use-time" v-if="coupon.use_time">
+        <span>使用时间：</span><span>{{coupon.use_time}}</span>
+      </div>
+      <div class="use-notice" v-else>
         请扫描商家付款二维码使用优惠券
       </div>
       <div class="limit-time">
@@ -189,12 +192,23 @@ export default {
       }
       .use-notice {
         margin-top: 40.5px;
+        margin-bottom: 15px;
         font-size:14px;
         font-weight:400;
         color:rgba(89,175,52,1);
       }
+      .use-time {
+        margin-top: 57.5px;
+        display: flex;
+        justify-content: space-between;
+        font-size:13px;
+        font-weight:400;
+        color:rgba(153,153,153,1);
+        width: 100%;
+        text-align: left;
+      }
       .limit-time {
-        margin-top: 30px;
+        margin-top: 15px;
         display: flex;
         flex-direction: column;
         justify-content: center;
