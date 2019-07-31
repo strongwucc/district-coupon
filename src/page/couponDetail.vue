@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import BScroll from 'better-scroll'
 import { baseRedirectUrl, appId } from '../../src/config/env'
 import { getRect } from '../../src/assets/js/dom'
 import Valid from '../utils/valid'
@@ -87,7 +88,8 @@ export default {
       coupon: {},
       showNotice: false,
       showMerchants: false,
-      posting: false
+      posting: false,
+      scroll: ''
     }
   },
   computed: {
@@ -105,6 +107,23 @@ export default {
   destroyed () {
   },
   methods: {
+    // 初始化滚动
+    initScroll () {
+      if (!this.$refs.couponDetailPage) {
+        return
+      }
+      this.$refs.couponDetailPage.style.minHeight = `${getRect(this.$refs.couponDetailPage).height + 1}px`
+      let options = {
+        probeType: 1,
+        click: true,
+        pullUpLoad: false
+      }
+      this.scroll = new BScroll(this.$refs.couponDetailPage, options)
+    },
+    refresh () {
+      // 代理better-scroll的refresh方法
+      this.scroll && this.scroll.refresh()
+    },
     getCouponDetail () {
       this.$vux.loading.show({})
       this.$http.post(this.API.couponDetail, {pcid: this.pcId}).then(res => {
@@ -113,6 +132,9 @@ export default {
           this.coupon = res
         } else {
         }
+        this.$nextTick(() => {
+          this.initScroll()
+        })
       })
     },
     receive (pcid) {
@@ -168,10 +190,11 @@ export default {
     },
     resetHeight () {
       this.$nextTick(() => {
-        let clientHeight = document.body.clientHeight
-        let contentHeight = getRect(this.$refs.content).height
-        let newPageHeight = contentHeight < clientHeight ? clientHeight : contentHeight
-        this.$refs.couponDetailPage.style.height = (newPageHeight + 40) + 'px'
+        // let clientHeight = document.body.clientHeight
+        // let contentHeight = getRect(this.$refs.content).height
+        // let newPageHeight = contentHeight < clientHeight ? clientHeight : contentHeight
+        // this.$refs.couponDetailPage.style.height = (newPageHeight + 40) + 'px'
+        this.refresh()
       })
     }
   }

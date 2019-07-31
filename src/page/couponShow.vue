@@ -74,6 +74,7 @@
 </template>
 
 <script>
+import BScroll from 'better-scroll'
 import Barcode from '@xkeshi/vue-barcode'
 import Qrcode from '@chenfengyuan/vue-qrcode'
 import { Swiper, SwiperItem } from 'vux'
@@ -88,7 +89,8 @@ export default {
       coupon: {},
       showNotice: false,
       showOrder: false,
-      showMerchants: false
+      showMerchants: false,
+      scroll: ''
     }
   },
   computed: {
@@ -106,6 +108,23 @@ export default {
   destroyed () {
   },
   methods: {
+    // 初始化滚动
+    initScroll () {
+      if (!this.$refs.couponShowPage) {
+        return
+      }
+      this.$refs.couponShowPage.style.minHeight = `${getRect(this.$refs.couponShowPage).height + 1}px`
+      let options = {
+        probeType: 1,
+        click: true,
+        pullUpLoad: false
+      }
+      this.scroll = new BScroll(this.$refs.couponShowPage, options)
+    },
+    refresh () {
+      // 代理better-scroll的refresh方法
+      this.scroll && this.scroll.refresh()
+    },
     showCouponDetail () {
       this.$vux.loading.show({})
       this.$http.post(this.API.couponShow, {qrcode: this.code}).then(res => {
@@ -114,14 +133,18 @@ export default {
           this.coupon = res
         } else {
         }
+        this.$nextTick(() => {
+          this.initScroll()
+        })
       })
     },
     resetHeight () {
       this.$nextTick(() => {
-        let clientHeight = document.body.clientHeight
-        let contentHeight = getRect(this.$refs.content).height
-        let newPageHeight = contentHeight < clientHeight ? clientHeight : contentHeight
-        this.$refs.couponShowPage.style.height = (newPageHeight + 40) + 'px'
+        // let clientHeight = document.body.clientHeight
+        // let contentHeight = getRect(this.$refs.content).height
+        // let newPageHeight = contentHeight < clientHeight ? clientHeight : contentHeight
+        // this.$refs.couponShowPage.style.height = (newPageHeight + 40) + 'px'
+        this.refresh()
       })
     }
   }
