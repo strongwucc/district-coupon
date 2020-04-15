@@ -59,7 +59,8 @@ export default {
 
       this.$vux.loading.show({})
       this.posting = true
-      this.$http.post(this.API.authorizations, {code: this.code}).then(res => {
+      // this.$http.post(this.API.authorizations, {code: this.code}).then(res => {
+      this.$http.post(this.API.authorizations, {type: 'weixin', code: this.code}).then(res => {
         this.$vux.loading.hide()
         this.posting = false
         if (res.access_token) {
