@@ -12,7 +12,12 @@ import FastClick from 'fastclick'
 import NP from 'number-precision'
 import './assets/css/reset.css'
 import './assets/css/vux-reset.css'
-import { DatetimePlugin, ConfirmPlugin, LoadingPlugin, ToastPlugin } from 'vux'
+import {
+  DatetimePlugin,
+  ConfirmPlugin,
+  LoadingPlugin,
+  ToastPlugin
+} from 'vux'
 
 // import VConsole from 'vconsole'
 // var vConsole = new VConsole()
@@ -38,7 +43,9 @@ Vue.prototype.$passiveSupported = passiveSupported
 if ('addEventListener' in document) {
   document.addEventListener('DOMContentLoaded', function () {
     FastClick.attach(document.body)
-  }, passiveSupported ? { passive: true } : false)
+  }, passiveSupported ? {
+    passive: true
+  } : false)
 }
 
 Vue.use(DatetimePlugin)
@@ -65,6 +72,8 @@ new Vue({
   el: '#app',
   router,
   store,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

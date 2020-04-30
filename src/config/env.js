@@ -12,12 +12,14 @@ let uploadUrl = 'http://yanshi.yklsq.etonepay.com'
 // let appId = 'yt6eb45ebc33750e02'
 let appId = 'wx68a832494fe9c1ef'
 let baseRedirectUrl = 'http://' + window.location.host
+let port = window.location.port ? window.location.port : ''
+let oauthBaseUrl = window.location.protocol + '//' + window.location.hostname + port
 
 if (process.env.NODE_ENV === 'development') {
   // rootUrl = 'http://district.test'
-  rootUrl = 'http://square.square.yaliantong.com'
+  rootUrl = 'http://cjyz.square.yaliantong.com'
   baseUrl = rootUrl + '/api/'
-  baseRedirectUrl = 'http://square.square.yaliantong.com/district-coupon'
+  baseRedirectUrl = 'http://cjyz.square.yaliantong.com/district-coupon'
   // appId = 'yt6eb45ebc33750e02'
   appId = 'wx68a832494fe9c1ef'
 } else if (process.env.NODE_ENV === 'production') {
@@ -28,7 +30,7 @@ if (process.env.NODE_ENV === 'development') {
   // baseUrl = rootUrl + '/api/'
   // baseRedirectUrl = 'http://ceshi6.sdykt.com.cn:1280/business-district'
   // appId = 'yt6eb45ebc33750e02'
-  appId = 'wx68a832494fe9c1ef'
+  appId = 'wx994a8d0b0eb80017'
 }
 
 export {
@@ -36,5 +38,6 @@ export {
   baseUrl,
   uploadUrl,
   appId,
-  baseRedirectUrl
+  baseRedirectUrl,
+  oauthBaseUrl
 }

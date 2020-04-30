@@ -1,7 +1,12 @@
 import axios from 'axios'
 import router from '../router'
 import qs from 'qs'
-import { baseUrl, baseRedirectUrl, appId } from '../config/env'
+import {
+  baseUrl,
+  baseRedirectUrl,
+  appId,
+  oauthBaseUrl
+} from '../config/env'
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 axios.defaults.headers['Accept'] = 'application/prs.district.v1+json'
 axios.defaults.withCredentials = false
@@ -18,7 +23,7 @@ axios.interceptors.request.use(function (config) {
   return Promise.reject(error)
 })
 
-function getRefreshToken () {
+function getRefreshToken() {
   // print('TRYING TO GET TOKEN...')
   return axios({
     url: baseUrl + 'authorizations/update',
@@ -39,7 +44,8 @@ axios.interceptors.response.use(function (response) {
       let redirect = router.currentRoute.fullPath
       let redirectUri = baseRedirectUrl + '/wechat.html'
       // let oauthUrl = 'http://wxgw.yklsh.etonepay.com/authorize?etone_id=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect)
-      let oauthUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&response_type=code&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect) + '#wechat_redirect'
+      // let oauthUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&response_type=code&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect) + '#wechat_redirect'
+      let oauthUrl = oauthBaseUrl + '/weixin_redirect?redirect_uri=' + encodeURIComponent(redirectUri) + '&redirect=' + encodeURIComponent(redirect)
       window.location.href = oauthUrl
       return Promise.reject(error)
     }
@@ -58,7 +64,8 @@ axios.interceptors.response.use(function (response) {
           let redirect = router.currentRoute.fullPath
           let redirectUri = baseRedirectUrl + '/wechat.html'
           // let oauthUrl = 'http://wxgw.yklsh.etonepay.com/authorize?etone_id=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect)
-          let oauthUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&response_type=code&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect) + '#wechat_redirect'
+          // let oauthUrl = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&response_type=code&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect) + '#wechat_redirect'
+          let oauthUrl = oauthBaseUrl + '/weixin_redirect?redirect_uri=' + encodeURIComponent(redirectUri) + '&redirect=' + encodeURIComponent(redirect)
           window.location.href = oauthUrl
         }
         return Promise.reject(error)
@@ -79,7 +86,7 @@ axios.interceptors.response.use(function (response) {
 })
 
 export default class http {
-  constructor (store, api) {
+  constructor(store, api) {
     var baseApi = baseUrl
     this.baseApi = baseApi
     this.api = api // 全部接口
@@ -88,7 +95,7 @@ export default class http {
     //   this.userAuth()
     // }
   }
-  get (url, data, isNeedBaseUrl) {
+  get(url, data, isNeedBaseUrl) {
     var options = {
       url: !isNeedBaseUrl ? this.baseApi + url : url,
       data: data || {},
@@ -96,7 +103,7 @@ export default class http {
     }
     return this.request(options)
   }
-  post (url, data) {
+  post(url, data) {
     var postUrl = this.baseApi
     if (url) {
       postUrl += url
@@ -108,11 +115,11 @@ export default class http {
     }
     return this.request(options)
   }
-  all (array) {
+  all(array) {
     var promiseAll = Promise.all(array)
     return promiseAll
   }
-  request (options) {
+  request(options) {
     var promise = new Promise((resolve) => {
       axios(options)
         .then((result) => {
@@ -127,17 +134,26 @@ export default class http {
             // The request was made but no response was received
             // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
             // http.ClientRequest in node.js
-            resolve({status: '6000', msg: '网络出错啦:' + error.request})
+            resolve({
+              status: '6000',
+              msg: '网络出错啦:' + error.request
+            })
           } else {
             // Something happened in setting up the request that triggered an Error
-            resolve({status: '6001', msg: '网络出错啦:' + error.message})
+            resolve({
+              status: '6001',
+              msg: '网络出错啦:' + error.message
+            })
           }
-          resolve({status: '6002', msg: '服务器崩溃啦:' + error.message})
+          resolve({
+            status: '6002',
+            msg: '服务器崩溃啦:' + error.message
+          })
         })
     })
     return promise
   }
-  userAuth () { // 会员登录认证
+  userAuth() { // 会员登录认证
     axios.interceptors.response.use(response => {
       // console.log(response)
       // if (response.status == 200 && response.data.return_code == '1001' && router.currentRoute.meta.auth == 1 && !router.currentRoute.query.auth) {
