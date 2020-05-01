@@ -73,7 +73,7 @@
               v-if="coupon.user_count > 0 && coupon.user_count >= coupon.get_limit"
               class="action yilin"
               :class="{'need-buy': coupon.is_buy === '2'}"
-              @click.stop="showCoupon()"
+              @click.stop="showCoupon(coupon.qrcode)"
             >查看详情</div>
             <div
               v-else-if="coupon.is_buy === '2' && coupon.quantity > 0"
@@ -321,6 +321,7 @@ export default {
               this.coupons[couponIndex].quantity - 1;
             this.coupons[couponIndex].user_count =
               this.coupons[couponIndex].user_count + 1;
+            this.coupons[couponIndex].qrcode = res.qrcode;
             return true;
           } else {
             window.location.href = res.payUrl;
@@ -328,8 +329,8 @@ export default {
           }
         });
     },
-    showCoupon() {
-      this.$router.push("/coupon_show");
+    showCoupon(qrcode) {
+      this.$router.push({path: 'coupon_show/' + qrcode})
     },
     showCouponDetail(pcId) {
       this.$router.push({ path: "coupon_detail/" + pcId });
