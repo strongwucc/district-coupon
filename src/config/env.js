@@ -17,11 +17,15 @@ let oauthBaseUrl = window.location.protocol + '//' + window.location.hostname + 
 
 if (process.env.NODE_ENV === 'development') {
   // rootUrl = 'http://district.test'
-  rootUrl = 'http://cjyz.square.yaliantong.com'
+  // rootUrl = 'http://cjyz.square.yaliantong.com'
+  // baseUrl = rootUrl + '/api/'
+  // baseRedirectUrl = 'http://cjyz.square.yaliantong.com/district-coupon'
+  rootUrl = ''
   baseUrl = rootUrl + '/api/'
-  baseRedirectUrl = 'http://cjyz.square.yaliantong.com/district-coupon'
+  baseRedirectUrl = 'http://47.116.68.124:8080/district-coupon'
   // appId = 'yt6eb45ebc33750e02'
-  appId = 'wx68a832494fe9c1ef'
+  appId = 'wx583be2083a929fb0'
+  oauthBaseUrl = 'http://47.116.68.124:8080'
 } else if (process.env.NODE_ENV === 'production') {
   rootUrl = 'http://' + window.location.host
   baseUrl = rootUrl + '/api/'

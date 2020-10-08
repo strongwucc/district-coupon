@@ -2,79 +2,128 @@
   <div class="coupon-detail-page" ref="couponDetailPage">
     <div class="content" ref="content">
       <div class="left-count">
-        剩余
-        <span>{{coupon.quantity}}</span>张
+        剩余 <span>{{ coupon.quantity }}</span
+        >张
       </div>
-      <div class="title">{{coupon.title}}</div>
+      <div class="title">{{ coupon.title }}</div>
       <div class="face-value">
         <span class="currency" v-if="coupon.card_type !== 'DISCOUNT'">￥</span>
         <span class="number">
-          <template v-if="coupon.card_type === 'DISCOUNT'">{{NP.divide(coupon.discount, 10)}}</template>
-          <template v-else>{{coupon.reduce_cost|formatMoney(0)}}</template>
+          <template v-if="coupon.card_type === 'DISCOUNT'">{{
+            NP.divide(coupon.discount, 10)
+          }}</template>
+          <template v-else>{{ coupon.reduce_cost | formatMoney(0) }}</template>
         </span>
         <span class="zhe" v-if="coupon.card_type === 'DISCOUNT'">折</span>
       </div>
-      <div class="description">{{coupon.description}}</div>
+      <div class="description">{{ coupon.description }}</div>
       <div
         class="btn"
         v-if="coupon.user_count > 0 && coupon.user_count >= coupon.get_limit"
-        :class="{'yilin': true, 'need-buy': coupon.is_buy === '2'}"
+        :class="{ yilin: true, 'need-buy': coupon.is_buy === '2' }"
         @click.stop="showCoupon"
-      >前往我的券包</div>
+      >
+        前往我的券包
+      </div>
       <div
         class="btn"
         v-else-if="coupon.is_buy === '2' && coupon.quantity > 0"
-        :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}"
+        :class="{
+          'need-buy': coupon.is_buy === '2',
+          'no-left': coupon.quantity <= 0
+        }"
         @click.stop="receive(coupon.id)"
-      >立即购买</div>
+      >
+        立即购买
+      </div>
       <div
         class="btn"
         v-else-if="coupon.is_buy === '1' && coupon.quantity > 0"
-        :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}"
+        :class="{
+          'need-buy': coupon.is_buy === '2',
+          'no-left': coupon.quantity <= 0
+        }"
         @click.stop="receive(coupon.id)"
-      >我要领</div>
+      >
+        我要领
+      </div>
       <div
         class="btn"
         v-else-if="coupon.quantity <= 0"
-        :class="{'need-buy': coupon.is_buy === '2', 'no-left': coupon.quantity <= 0}"
-      >已售罄</div>
+        :class="{
+          'need-buy': coupon.is_buy === '2',
+          'no-left': coupon.quantity <= 0
+        }"
+      >
+        已售罄
+      </div>
       <div class="get-limit">
-        每人限购{{coupon.get_limit}}张
-        <template
-          v-if="coupon.day_get_limit > 0"
-        >，每日限领{{coupon.day_get_limit}}张</template>
+        每人限购{{ coupon.get_limit }}张
+        <template v-if="coupon.day_get_limit > 0"
+          >，每日限领{{ coupon.day_get_limit }}张</template
+        >
       </div>
       <div class="limit-time">
         <div class="expire-time">
-          <span>有效期：</span>
-          <span>{{coupon.expire_date}}</span>
+          <span>有效期：</span> <span>{{ coupon.expire_date }}</span>
         </div>
         <div class="days-weeks">
           <span class="label">可用时间：</span>
           <span
             class="txt"
-            v-if="coupon.limit_days_and_weeks.days !== '' || coupon.limit_days_and_weeks.weeks !== ''"
+            v-if="
+              coupon.limit_days_and_weeks.days !== '' ||
+                coupon.limit_days_and_weeks.weeks !== ''
+            "
           >
-            {{coupon.limit_days_and_weeks.weeks}}
-            <template v-if="coupon.limit_days_and_weeks.days">；</template>
-            {{coupon.limit_days_and_weeks.days}}
+            {{ coupon.limit_days_and_weeks.weeks }}
+            <template v-if="coupon.limit_days_and_weeks.days"
+              >；</template
+            >
+            {{ coupon.limit_days_and_weeks.days }}
           </span>
           <span class="txt" v-else>有效期内任何时间都可用</span>
         </div>
       </div>
       <div class="item notice">
-        <div class="notice-title" @click.stop="showNotice = !showNotice;resetHeight()">
+        <div
+          class="notice-title"
+          @click.stop="
+            showNotice = !showNotice;
+            resetHeight();
+          "
+        >
           <span class="txt">使用须知</span>
-          <img v-show="!showNotice" src="../assets/img/base/icon_arrow_down@2x.png" />
-          <img v-show="showNotice" src="../assets/img/base/icon_arrow_up@2x.png" />
+          <img
+            v-show="!showNotice"
+            src="../assets/img/base/icon_arrow_down@2x.png"
+          />
+          <img
+            v-show="showNotice"
+            src="../assets/img/base/icon_arrow_up@2x.png"
+          />
         </div>
-        <div v-show="showNotice" class="notice-content">{{coupon.notice}}</div>
+        <div v-show="showNotice" class="notice-content">
+          {{ coupon.notice }}
+        </div>
       </div>
       <div class="item store">
-        <div class="notice-title" @click.stop="showMerchants = !showMerchants;resetHeight()">
+        <div
+          class="notice-title"
+          @click.stop="
+            showMerchants = !showMerchants;
+            resetHeight();
+          "
+        >
           <span class="txt">适用商户</span>
-          <img v-show="!showMerchants" src="../assets/img/base/icon_arrow_down@2x.png" />
-          <img v-show="showMerchants" src="../assets/img/base/icon_arrow_up@2x.png" />
+          <img
+            v-show="!showMerchants"
+            src="../assets/img/base/icon_arrow_down@2x.png"
+          />
+          <img
+            v-show="showMerchants"
+            src="../assets/img/base/icon_arrow_up@2x.png"
+          />
         </div>
         <div v-show="showMerchants" class="notice-content">
           <div
@@ -82,11 +131,13 @@
             v-for="(merchant, merchantIndex) in coupon.merchants"
             :key="merchantIndex"
           >
-            <div class="mer-name">{{merchant.mer_name}}</div>
-            <div class="open-time">营业时间：{{merchant.open_time}}</div>
-            <div class="addr">地址：{{merchant.mer_addr}}</div>
+            <div class="mer-name">{{ merchant.mer_name }}</div>
+            <div class="open-time">营业时间：{{ merchant.open_time }}</div>
+            <div class="addr">地址：{{ merchant.mer_addr }}</div>
           </div>
-          <div class="no-merchant" v-if="coupon.merchants.length === 0">适用所有商户</div>
+          <div class="no-merchant" v-if="coupon.merchants.length === 0">
+            适用所有商户
+          </div>
         </div>
       </div>
     </div>
@@ -192,55 +243,79 @@ export default {
         .then(res => {
           this.$vux.loading.hide();
           this.posting = false;
-          if (typeof res.payUrl === "undefined") {
-            if (res.status_code === 401) {
-              this.$vux.toast.show({
-                type: "text",
-                text: '<span style="font-size: 14px">未登录</span>',
-                position: "middle"
-              });
-              if (Valid.check_weixin()) {
-                setTimeout(() => {
-                  let redirect = this.$router.currentRoute.fullPath;
-                  let redirectUri = baseRedirectUrl + "/wechat.html";
-                  // let oauthUrl = 'http://wxgw.yklsh.etonepay.com/authorize?etone_id=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect)
-                  // let oauthUrl =
-                  //   "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +
-                  //   appId +
-                  //   "&redirect_uri=" +
-                  //   encodeURIComponent(redirectUri) +
-                  //   "&response_type=code&scope=snsapi_userinfo&state=" +
-                  //   encodeURIComponent(redirect) +
-                  //   "#wechat_redirect";
-                  let oauthUrl =
-                    oauthBaseUrl +
-                    "/weixin_redirect?redirect_uri=" +
-                    encodeURIComponent(redirectUri) +
-                    "&redirect=" +
-                    encodeURIComponent(redirect);
-                  window.location.href = oauthUrl;
-                }, 2000);
+          if (typeof res.payData === "undefined") {
+            if (typeof res.payUrl === "undefined") {
+              if (res.status_code === 401) {
+                this.$vux.toast.show({
+                  type: "text",
+                  text: '<span style="font-size: 14px">未登录</span>',
+                  position: "middle"
+                });
+                if (Valid.check_weixin()) {
+                  setTimeout(() => {
+                    let redirect = this.$router.currentRoute.fullPath;
+                    let redirectUri = baseRedirectUrl + "/wechat.html";
+                    // let oauthUrl = 'http://wxgw.yklsh.etonepay.com/authorize?etone_id=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect)
+                    // let oauthUrl =
+                    //   "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +
+                    //   appId +
+                    //   "&redirect_uri=" +
+                    //   encodeURIComponent(redirectUri) +
+                    //   "&response_type=code&scope=snsapi_userinfo&state=" +
+                    //   encodeURIComponent(redirect) +
+                    //   "#wechat_redirect";
+                    let oauthUrl =
+                      oauthBaseUrl +
+                      "/weixin_redirect?redirect_uri=" +
+                      encodeURIComponent(redirectUri) +
+                      "&redirect=" +
+                      encodeURIComponent(redirect);
+                    window.location.href = oauthUrl;
+                  }, 2000);
+                }
+                return false;
+              } else {
+                let message = res.message ? res.message : "未知错误";
+                this.$vux.toast.show({
+                  type: "text",
+                  text: '<span style="font-size: 14px">' + message + "</span>",
+                  position: "middle"
+                });
+                return false;
               }
-              return false;
-            } else {
-              let message = res.message ? res.message : "未知错误";
+            } else if (res.payUrl === "") {
               this.$vux.toast.show({
                 type: "text",
-                text: '<span style="font-size: 14px">' + message + "</span>",
+                text: '<span style="font-size: 14px">领取成功</span>',
                 position: "middle"
               });
-              return false;
+              this.coupon.quantity = this.coupon.quantity - 1;
+              this.coupon.user_count = this.coupon.user_count + 1;
+            } else {
+              window.location.href = res.payUrl;
             }
-          } else if (res.payUrl === "") {
-            this.$vux.toast.show({
-              type: "text",
-              text: '<span style="font-size: 14px">领取成功</span>',
-              position: "middle"
-            });
-            this.coupon.quantity = this.coupon.quantity - 1;
-            this.coupon.user_count = this.coupon.user_count + 1;
           } else {
-            window.location.href = res.payUrl;
+            let _this = this;
+            if (typeof WeixinJSBridge == "undefined") {
+              if (document.addEventListener) {
+                document.addEventListener(
+                  "WeixinJSBridgeReady",
+                  _this.onBridgeReady(res.payData, res.qrcode),
+                  false
+                );
+              } else if (document.attachEvent) {
+                document.attachEvent(
+                  "WeixinJSBridgeReady",
+                  _this.onBridgeReady(res.payData, res.qrcode)
+                );
+                document.attachEvent(
+                  "onWeixinJSBridgeReady",
+                  _this.onBridgeReady(res.payData, res.qrcode)
+                );
+              }
+            } else {
+              _this.onBridgeReady(res.payData, res.qrcode);
+            }
           }
         });
     },
@@ -254,6 +329,27 @@ export default {
         // let newPageHeight = contentHeight < clientHeight ? clientHeight : contentHeight
         // this.$refs.couponDetailPage.style.height = (newPageHeight + 40) + 'px'
         this.refresh();
+      });
+    },
+    onBridgeReady(payData, qrcode) {
+      let _this = this;
+      WeixinJSBridge.invoke("getBrandWCPayRequest", payData, function(res) {
+        console.log(res);
+        if (res.err_msg === "get_brand_wcpay_request:ok") {
+          _this.$vux.toast.show({
+            type: "text",
+            text: '<span style="font-size: 14px">购买成功</span>',
+            position: "middle"
+          });
+          _this.coupon.quantity = _this.coupon.quantity - 1;
+          _this.coupon.user_count = _this.coupon.user_count + 1;
+        } else {
+          _this.$vux.toast.show({
+            type: "text",
+            text: '<span style="font-size: 14px">购买失败</span>',
+            position: "middle"
+          });
+        }
       });
     }
   }
