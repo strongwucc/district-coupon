@@ -12,7 +12,7 @@ let uploadUrl = 'http://yanshi.yklsq.etonepay.com'
 // let appId = 'yt6eb45ebc33750e02'
 let appId = 'wx68a832494fe9c1ef'
 let baseRedirectUrl = 'http://' + window.location.host
-let port = window.location.port ? window.location.port : ''
+let port = window.location.port ? ':' + window.location.port : ''
 let oauthBaseUrl = window.location.protocol + '//' + window.location.hostname + port
 
 if (process.env.NODE_ENV === 'development') {
@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'development') {
   // baseUrl = rootUrl + '/api/'
   // baseRedirectUrl = 'http://ceshi6.sdykt.com.cn:1280/business-district'
   // appId = 'yt6eb45ebc33750e02'
-  appId = 'wx994a8d0b0eb80017'
+  appId = 'wx583be2083a929fb0'
 }
 
 export {
