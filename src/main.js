@@ -19,8 +19,8 @@ import {
   ToastPlugin
 } from 'vux'
 
-// import VConsole from 'vconsole'
-// var vConsole = new VConsole()
+import VConsole from 'vconsole'
+var vConsole = new VConsole()
 
 Vue.config.productionTip = false
 

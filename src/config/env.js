@@ -22,10 +22,10 @@ if (process.env.NODE_ENV === 'development') {
   // baseRedirectUrl = 'http://cjyz.square.yaliantong.com/district-coupon'
   rootUrl = ''
   baseUrl = rootUrl + '/api/'
-  baseRedirectUrl = 'http://47.116.68.124:8080/district-coupon'
+  baseRedirectUrl = 'http://zjxh.yeemkt.com/district-coupon'
   // appId = 'yt6eb45ebc33750e02'
-  appId = 'wx583be2083a929fb0'
-  oauthBaseUrl = 'http://47.116.68.124:8080'
+  appId = 'wx4b1521dc48936a5f'
+  oauthBaseUrl = 'http://zjxh.yeemkt.com'
 } else if (process.env.NODE_ENV === 'production') {
   rootUrl = 'http://' + window.location.host
   baseUrl = rootUrl + '/api/'
@@ -34,7 +34,7 @@ if (process.env.NODE_ENV === 'development') {
   // baseUrl = rootUrl + '/api/'
   // baseRedirectUrl = 'http://ceshi6.sdykt.com.cn:1280/business-district'
   // appId = 'yt6eb45ebc33750e02'
-  appId = 'wx583be2083a929fb0'
+  appId = 'wx4b1521dc48936a5f'
 }
 
 export {
