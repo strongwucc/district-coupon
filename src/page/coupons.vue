@@ -114,7 +114,6 @@
                 'need-buy': coupon.is_buy === '2',
                 'no-left': coupon.quantity <= 0
               }"
-              @click.stop="receive(coupon.id, couponIndex)"
             >
               购买
             </div>
@@ -125,7 +124,6 @@
                 'need-buy': coupon.is_buy === '2',
                 'no-left': coupon.quantity <= 0
               }"
-              @click.stop="receive(coupon.id, couponIndex)"
             >
               领取
             </div>

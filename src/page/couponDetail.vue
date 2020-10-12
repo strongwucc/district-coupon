@@ -30,9 +30,9 @@
         v-else-if="coupon.is_buy === '2' && coupon.quantity > 0"
         :class="{
           'need-buy': coupon.is_buy === '2',
-          'no-left': coupon.quantity <= 0
+          'no-left': coupon.quantity <= 0,
         }"
-        @click.stop="receive(coupon.id)"
+        @click.stop="preReceive(coupon.id)"
       >
         立即购买
       </div>
@@ -41,7 +41,7 @@
         v-else-if="coupon.is_buy === '1' && coupon.quantity > 0"
         :class="{
           'need-buy': coupon.is_buy === '2',
-          'no-left': coupon.quantity <= 0
+          'no-left': coupon.quantity <= 0,
         }"
         @click.stop="receive(coupon.id)"
       >
@@ -52,7 +52,7 @@
         v-else-if="coupon.quantity <= 0"
         :class="{
           'need-buy': coupon.is_buy === '2',
-          'no-left': coupon.quantity <= 0
+          'no-left': coupon.quantity <= 0,
         }"
       >
         已售罄
@@ -73,13 +73,11 @@
             class="txt"
             v-if="
               coupon.limit_days_and_weeks.days !== '' ||
-                coupon.limit_days_and_weeks.weeks !== ''
+              coupon.limit_days_and_weeks.weeks !== ''
             "
           >
             {{ coupon.limit_days_and_weeks.weeks }}
-            <template v-if="coupon.limit_days_and_weeks.days"
-              >；</template
-            >
+            <template v-if="coupon.limit_days_and_weeks.days">；</template>
             {{ coupon.limit_days_and_weeks.days }}
           </span>
           <span class="txt" v-else>有效期内任何时间都可用</span>
@@ -162,17 +160,39 @@
     <!--<div class="circle"></div>-->
     <!--<div class="circle"></div>-->
     <!--</div>-->
+    <div class="buy-info-container">
+      <confirm
+        v-model="buyInfoVisible"
+        :hide-on-blur="true"
+        :title="buyInfoTitle"
+        @on-confirm="onConfirmBuyInfo"
+      >
+        <div class="buy-info-content">
+          <div class="buy-info-item">
+            <group>
+              <x-input required="true" type="number" v-model="buyCertNo" placeholder="请填写烟草专卖证号"></x-input>
+            </group>
+          </div>
+          <div class="buy-info-item">
+            <group>
+              <x-input required="true" type="tel" v-model="buyMobile" placeholder="请填写联系人手机号"></x-input>
+            </group>
+          </div>
+        </div>
+      </confirm>
+    </div>
   </div>
 </template>
 
 <script>
+import { Confirm, XInput } from "vux";
 import BScroll from "better-scroll";
 import { baseRedirectUrl, appId, oauthBaseUrl } from "../../src/config/env";
 import { getRect } from "../../src/assets/js/dom";
 import Valid from "../utils/valid";
 export default {
   name: "coupon_detail",
-  components: {},
+  components: { Confirm, XInput },
   inject: ["reload"], // 引入方法
   data() {
     return {
@@ -181,7 +201,12 @@ export default {
       showNotice: false,
       showMerchants: false,
       posting: false,
-      scroll: ""
+      scroll: "",
+      buyInfoVisible: false,
+      buyInfoTitle: "",
+      buyCertNo: "",
+      buyMobile: "",
+      buyPcid: null,
     };
   },
   computed: {},
@@ -201,13 +226,13 @@ export default {
       if (!this.$refs.couponDetailPage) {
         return;
       }
-      this.$refs.couponDetailPage.style.minHeight = `${getRect(
-        this.$refs.couponDetailPage
-      ).height + 1}px`;
+      this.$refs.couponDetailPage.style.minHeight = `${
+        getRect(this.$refs.couponDetailPage).height + 1
+      }px`;
       let options = {
         probeType: 1,
         click: true,
-        pullUpLoad: false
+        pullUpLoad: false,
       };
       this.scroll = new BScroll(this.$refs.couponDetailPage, options);
     },
@@ -217,16 +242,44 @@ export default {
     },
     getCouponDetail() {
       this.$vux.loading.show({});
-      this.$http.post(this.API.couponDetail, { pcid: this.pcId }).then(res => {
-        this.$vux.loading.hide();
-        if (res.id) {
-          this.coupon = res;
-        } else {
-        }
-        this.$nextTick(() => {
-          this.initScroll();
+      this.$http
+        .post(this.API.couponDetail, { pcid: this.pcId })
+        .then((res) => {
+          this.$vux.loading.hide();
+          if (res.id) {
+            this.coupon = res;
+          } else {
+          }
+          this.$nextTick(() => {
+            this.initScroll();
+          });
         });
-      });
+    },
+    preReceive(pcid) {
+      this.buyPcid = pcid;
+      this.buyInfoVisible = true;
+      return false;
+    },
+    onConfirmBuyInfo() {
+      if (this.buyCertNo === "") {
+        this.$vux.toast.show({
+          type: "text",
+          text: '<span style="font-size: 14px">请填写烟草专卖证号</span>',
+          position: "middle",
+        });
+        return false;
+      }
+      if (this.buyMobile === "") {
+        this.$vux.toast.show({
+          type: "text",
+          text: '<span style="font-size: 14px">请填写联系人手机号</span>',
+          position: "middle",
+        });
+        return false;
+      }
+
+      this.buyInfoVisible = false;
+      this.receive(this.buyPcid);
     },
     receive(pcid) {
       if (this.posting) {
@@ -238,9 +291,11 @@ export default {
       this.$http
         .post(this.API.receiveCoupon, {
           pcid: pcid,
-          frontUrl: baseRedirectUrl + "/coupon.html"
+          frontUrl: baseRedirectUrl + "/coupon.html",
+          certNo: this.buyCertNo,
+          buyMobile: this.buyMobile,
         })
-        .then(res => {
+        .then((res) => {
           this.$vux.loading.hide();
           this.posting = false;
           if (typeof res.payData === "undefined") {
@@ -249,7 +304,7 @@ export default {
                 this.$vux.toast.show({
                   type: "text",
                   text: '<span style="font-size: 14px">未登录</span>',
-                  position: "middle"
+                  position: "middle",
                 });
                 if (Valid.check_weixin()) {
                   setTimeout(() => {
@@ -279,7 +334,7 @@ export default {
                 this.$vux.toast.show({
                   type: "text",
                   text: '<span style="font-size: 14px">' + message + "</span>",
-                  position: "middle"
+                  position: "middle",
                 });
                 return false;
               }
@@ -287,7 +342,7 @@ export default {
               this.$vux.toast.show({
                 type: "text",
                 text: '<span style="font-size: 14px">领取成功</span>',
-                position: "middle"
+                position: "middle",
               });
               this.coupon.quantity = this.coupon.quantity - 1;
               this.coupon.user_count = this.coupon.user_count + 1;
@@ -333,13 +388,13 @@ export default {
     },
     onBridgeReady(payData, qrcode) {
       let _this = this;
-      WeixinJSBridge.invoke("getBrandWCPayRequest", payData, function(res) {
+      WeixinJSBridge.invoke("getBrandWCPayRequest", payData, function (res) {
         console.log(res);
         if (res.err_msg === "get_brand_wcpay_request:ok") {
           _this.$vux.toast.show({
             type: "text",
             text: '<span style="font-size: 14px">购买成功</span>',
-            position: "middle"
+            position: "middle",
           });
           _this.coupon.quantity = _this.coupon.quantity - 1;
           _this.coupon.user_count = _this.coupon.user_count + 1;
@@ -347,12 +402,12 @@ export default {
           _this.$vux.toast.show({
             type: "text",
             text: '<span style="font-size: 14px">购买失败</span>',
-            position: "middle"
+            position: "middle",
           });
         }
       });
-    }
-  }
+    },
+  },
 };
 </script>
 
