@@ -10,3 +10,7 @@
   width: 20px !important;
   height: 20px !important;
 }
+
+.vux-confirm .weui-dialog__btn {
+  font-size: 14px !important;
+}

@@ -113,7 +113,7 @@
             resetHeight();
           "
         >
-          <span class="txt">适用商户</span>
+          <span class="txt">使用范围</span>
           <img
             v-show="!showMerchants"
             src="../assets/img/base/icon_arrow_down@2x.png"
@@ -164,19 +164,21 @@
       <confirm
         v-model="buyInfoVisible"
         :hide-on-blur="true"
-        :title="buyInfoTitle"
         @on-confirm="onConfirmBuyInfo"
+        :close-on-confirm="false"
       >
         <div class="buy-info-content">
           <div class="buy-info-item">
-            <group>
-              <x-input required="true" type="number" v-model="buyCertNo" placeholder="请填写烟草专卖证号"></x-input>
-            </group>
+            <span class="label">烟草专卖证号</span>
+            <span class="value">
+              <input required="true" type="number" v-model="buyCertNo" />
+            </span>
           </div>
           <div class="buy-info-item">
-            <group>
-              <x-input required="true" type="tel" v-model="buyMobile" placeholder="请填写联系人手机号"></x-input>
-            </group>
+            <span class="label">联系人手机号</span>
+            <span class="value">
+              <input required="true" type="tel" v-model="buyMobile" />
+            </span>
           </div>
         </div>
       </confirm>
@@ -261,18 +263,18 @@ export default {
       return false;
     },
     onConfirmBuyInfo() {
-      if (this.buyCertNo === "") {
+      if (/[0-9]{12}/.test(this.buyCertNo) === false) {
         this.$vux.toast.show({
           type: "text",
-          text: '<span style="font-size: 14px">请填写烟草专卖证号</span>',
+          text: '<span style="font-size: 14px">请填写正确的烟草专卖证号</span>',
           position: "middle",
         });
         return false;
       }
-      if (this.buyMobile === "") {
+      if (Valid.check_mobile(this.buyMobile) === false) {
         this.$vux.toast.show({
           type: "text",
-          text: '<span style="font-size: 14px">请填写联系人手机号</span>',
+          text: '<span style="font-size: 14px">请填写正确的手机号</span>',
           position: "middle",
         });
         return false;
@@ -652,5 +654,35 @@ export default {
   /*top: 150px;*/
   /*left: 347px;*/
   /*}*/
+  .buy-info-container {
+    .buy-info-content {
+      .buy-info-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        .label {
+          font-size: 14px;
+          color: #666;
+        }
+        .value {
+          width: 100%;
+          margin-top: 10px;
+          border: 1px solid rgba(229, 229, 229, 1);
+          padding: 0 6px;
+          box-sizing: border-box;
+        }
+        input {
+          height: 30px;
+          width: 100%;
+          font-size: 14px;
+          border: none;
+        }
+        &:first-child {
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
 }
 </style>
