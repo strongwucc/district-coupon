@@ -53,7 +53,7 @@
       </div>
       <div class="item store">
         <div class="notice-title" @click.stop="showMerchants = !showMerchants;resetHeight()">
-          <span class="txt">适用商户</span>
+          <span class="txt">适用范围</span>
           <img v-show="!showMerchants" src="../assets/img/base/icon_arrow_down@2x.png" />
           <img v-show="showMerchants" src="../assets/img/base/icon_arrow_up@2x.png" />
         </div>
@@ -67,7 +67,7 @@
             <div class="open-time">营业时间：{{merchant.open_time}}</div>
             <div class="addr">地址：{{merchant.mer_addr}}</div>
           </div>
-          <div class="no-merchant" v-if="coupon.merchants.length === 0">适用所有商户</div>
+          <div class="no-merchant" v-if="coupon.merchants.length === 0">全部适用</div>
         </div>
       </div>
     </div>
