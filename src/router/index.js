@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
+const Activity = r => require.ensure([], () => r(require('@/page/activity')), 'activity') // 活动页
 const Coupons = r => require.ensure([], () => r(require('@/page/coupons')), 'coupons') // 领券中心
 const CouponDetail = r => require.ensure([], () => r(require('@/page/couponDetail')), 'coupon_detail') // 优惠券详情
 const CouponShow = r => require.ensure([], () => r(require('@/page/couponShow')), 'coupon_show') // 优惠券使用
@@ -14,7 +15,17 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/coupons'
+      redirect: '/activity'
+    },
+
+    {
+      path: '/activity/:openId?',
+      name: 'activity',
+      component: Activity,
+      meta: {
+        auth: 0,
+        title: '领券中心'
+      }
     },
 
     {

@@ -187,131 +187,137 @@
 </template>
 
 <script>
-import { Confirm, XInput } from "vux";
-import BScroll from "better-scroll";
-import { baseRedirectUrl, appId, oauthBaseUrl } from "../../src/config/env";
-import { getRect } from "../../src/assets/js/dom";
-import Valid from "../utils/valid";
+import { Confirm, XInput } from 'vux'
+import BScroll from 'better-scroll'
+import { baseRedirectUrl, appId, oauthBaseUrl } from '../../src/config/env'
+import { getRect } from '../../src/assets/js/dom'
+import Valid from '../utils/valid'
 export default {
-  name: "coupon_detail",
+  name: 'coupon_detail',
   components: { Confirm, XInput },
-  inject: ["reload"], // 引入方法
-  data() {
+  inject: ['reload'], // 引入方法
+  data () {
     return {
-      pcId: "",
-      coupon: {},
+      pcId: '',
+      coupon: {
+        limit_days_and_weeks: {
+          'days': '',
+          weeks: ''
+        },
+        merchants: []
+      },
       showNotice: false,
       showMerchants: false,
       posting: false,
-      scroll: "",
+      scroll: '',
       buyInfoVisible: false,
-      buyInfoTitle: "",
-      buyCertNo: "",
-      buyMobile: "",
-      buyPcid: null,
-    };
+      buyInfoTitle: '',
+      buyCertNo: '',
+      buyMobile: '',
+      buyPcid: null
+    }
   },
   computed: {},
   watch: {},
-  created() {
+  created () {
     if (this.$route.params.pcId) {
-      this.pcId = this.$route.params.pcId;
+      this.pcId = this.$route.params.pcId
     }
   },
-  mounted() {
-    this.getCouponDetail();
+  mounted () {
+    this.getCouponDetail()
   },
-  destroyed() {},
+  destroyed () {},
   methods: {
     // 初始化滚动
-    initScroll() {
+    initScroll () {
       if (!this.$refs.couponDetailPage) {
-        return;
+        return
       }
       this.$refs.couponDetailPage.style.minHeight = `${
         getRect(this.$refs.couponDetailPage).height + 1
-      }px`;
+      }px`
       let options = {
         probeType: 1,
         click: true,
-        pullUpLoad: false,
-      };
-      this.scroll = new BScroll(this.$refs.couponDetailPage, options);
+        pullUpLoad: false
+      }
+      this.scroll = new BScroll(this.$refs.couponDetailPage, options)
     },
-    refresh() {
+    refresh () {
       // 代理better-scroll的refresh方法
-      this.scroll && this.scroll.refresh();
+      this.scroll && this.scroll.refresh()
     },
-    getCouponDetail() {
-      this.$vux.loading.show({});
+    getCouponDetail () {
+      this.$vux.loading.show({})
       this.$http
         .post(this.API.couponDetail, { pcid: this.pcId })
         .then((res) => {
-          this.$vux.loading.hide();
+          this.$vux.loading.hide()
           if (res.id) {
-            this.coupon = res;
+            this.coupon = res
           } else {
           }
           this.$nextTick(() => {
-            this.initScroll();
-          });
-        });
+            this.initScroll()
+          })
+        })
     },
-    preReceive(pcid) {
-      this.buyPcid = pcid;
-      this.buyInfoVisible = true;
-      return false;
+    preReceive (pcid) {
+      this.buyPcid = pcid
+      this.buyInfoVisible = true
+      return false
     },
-    onConfirmBuyInfo() {
+    onConfirmBuyInfo () {
       if (/[0-9]{12}/.test(this.buyCertNo) === false) {
         this.$vux.toast.show({
-          type: "text",
+          type: 'text',
           text: '<span style="font-size: 14px">请填写正确的烟草专卖证号</span>',
-          position: "middle",
-        });
-        return false;
+          position: 'middle'
+        })
+        return false
       }
       if (Valid.check_mobile(this.buyMobile) === false) {
         this.$vux.toast.show({
-          type: "text",
+          type: 'text',
           text: '<span style="font-size: 14px">请填写正确的手机号</span>',
-          position: "middle",
-        });
-        return false;
+          position: 'middle'
+        })
+        return false
       }
 
-      this.buyInfoVisible = false;
-      this.receive(this.buyPcid);
+      this.buyInfoVisible = false
+      this.receive(this.buyPcid)
     },
-    receive(pcid) {
+    receive (pcid) {
       if (this.posting) {
-        return false;
+        return false
       }
 
-      this.$vux.loading.show({});
-      this.posting = true;
+      this.$vux.loading.show({})
+      this.posting = true
       this.$http
         .post(this.API.receiveCoupon, {
           pcid: pcid,
-          frontUrl: baseRedirectUrl + "/coupon.html",
+          frontUrl: baseRedirectUrl + '/coupon.html',
           certNo: this.buyCertNo,
-          buyMobile: this.buyMobile,
+          buyMobile: this.buyMobile
         })
         .then((res) => {
-          this.$vux.loading.hide();
-          this.posting = false;
-          if (typeof res.payData === "undefined") {
-            if (typeof res.payUrl === "undefined") {
+          this.$vux.loading.hide()
+          this.posting = false
+          if (typeof res.payData === 'undefined') {
+            if (typeof res.payUrl === 'undefined') {
               if (res.status_code === 401) {
                 this.$vux.toast.show({
-                  type: "text",
+                  type: 'text',
                   text: '<span style="font-size: 14px">未登录</span>',
-                  position: "middle",
-                });
+                  position: 'middle'
+                })
                 if (Valid.check_weixin()) {
                   setTimeout(() => {
-                    let redirect = this.$router.currentRoute.fullPath;
-                    let redirectUri = baseRedirectUrl + "/wechat.html";
+                    let redirect = this.$router.currentRoute.fullPath
+                    let redirectUri = baseRedirectUrl + '/wechat.html'
                     // let oauthUrl = 'http://wxgw.yklsh.etonepay.com/authorize?etone_id=' + appId + '&redirect_uri=' + encodeURIComponent(redirectUri) + '&scope=snsapi_userinfo&state=' + encodeURIComponent(redirect)
                     // let oauthUrl =
                     //   "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +
@@ -323,94 +329,94 @@ export default {
                     //   "#wechat_redirect";
                     let oauthUrl =
                       oauthBaseUrl +
-                      "/weixin_redirect?redirect_uri=" +
+                      '/weixin_redirect?redirect_uri=' +
                       encodeURIComponent(redirectUri) +
-                      "&redirect=" +
-                      encodeURIComponent(redirect);
-                    window.location.href = oauthUrl;
-                  }, 2000);
+                      '&redirect=' +
+                      encodeURIComponent(redirect)
+                    window.location.href = oauthUrl
+                  }, 2000)
                 }
-                return false;
+                return false
               } else {
-                let message = res.message ? res.message : "未知错误";
+                let message = res.message ? res.message : '未知错误'
                 this.$vux.toast.show({
-                  type: "text",
-                  text: '<span style="font-size: 14px">' + message + "</span>",
-                  position: "middle",
-                });
-                return false;
+                  type: 'text',
+                  text: '<span style="font-size: 14px">' + message + '</span>',
+                  position: 'middle'
+                })
+                return false
               }
-            } else if (res.payUrl === "") {
+            } else if (res.payUrl === '') {
               this.$vux.toast.show({
-                type: "text",
+                type: 'text',
                 text: '<span style="font-size: 14px">领取成功</span>',
-                position: "middle",
-              });
-              this.coupon.quantity = this.coupon.quantity - 1;
-              this.coupon.user_count = this.coupon.user_count + 1;
+                position: 'middle'
+              })
+              this.coupon.quantity = this.coupon.quantity - 1
+              this.coupon.user_count = this.coupon.user_count + 1
             } else {
-              window.location.href = res.payUrl;
+              window.location.href = res.payUrl
             }
           } else {
-            let _this = this;
-            if (typeof WeixinJSBridge == "undefined") {
+            let _this = this
+            if (typeof WeixinJSBridge === 'undefined') {
               if (document.addEventListener) {
                 document.addEventListener(
-                  "WeixinJSBridgeReady",
+                  'WeixinJSBridgeReady',
                   _this.onBridgeReady(res.payData, res.qrcode),
                   false
-                );
+                )
               } else if (document.attachEvent) {
                 document.attachEvent(
-                  "WeixinJSBridgeReady",
+                  'WeixinJSBridgeReady',
                   _this.onBridgeReady(res.payData, res.qrcode)
-                );
+                )
                 document.attachEvent(
-                  "onWeixinJSBridgeReady",
+                  'onWeixinJSBridgeReady',
                   _this.onBridgeReady(res.payData, res.qrcode)
-                );
+                )
               }
             } else {
-              _this.onBridgeReady(res.payData, res.qrcode);
+              _this.onBridgeReady(res.payData, res.qrcode)
             }
           }
-        });
+        })
     },
-    showCoupon() {
-      this.$router.push("/my_coupons");
+    showCoupon () {
+      this.$router.push('/my_coupons')
     },
-    resetHeight() {
+    resetHeight () {
       this.$nextTick(() => {
         // let clientHeight = document.body.clientHeight
         // let contentHeight = getRect(this.$refs.content).height
         // let newPageHeight = contentHeight < clientHeight ? clientHeight : contentHeight
         // this.$refs.couponDetailPage.style.height = (newPageHeight + 40) + 'px'
-        this.refresh();
-      });
+        this.refresh()
+      })
     },
-    onBridgeReady(payData, qrcode) {
-      let _this = this;
-      WeixinJSBridge.invoke("getBrandWCPayRequest", payData, function (res) {
-        console.log(res);
-        if (res.err_msg === "get_brand_wcpay_request:ok") {
+    onBridgeReady (payData, qrcode) {
+      let _this = this
+      WeixinJSBridge.invoke('getBrandWCPayRequest', payData, function (res) {
+        console.log(res)
+        if (res.err_msg === 'get_brand_wcpay_request:ok') {
           _this.$vux.toast.show({
-            type: "text",
+            type: 'text',
             text: '<span style="font-size: 14px">购买成功</span>',
-            position: "middle",
-          });
-          _this.coupon.quantity = _this.coupon.quantity - 1;
-          _this.coupon.user_count = _this.coupon.user_count + 1;
+            position: 'middle'
+          })
+          _this.coupon.quantity = _this.coupon.quantity - 1
+          _this.coupon.user_count = _this.coupon.user_count + 1
         } else {
           _this.$vux.toast.show({
-            type: "text",
+            type: 'text',
             text: '<span style="font-size: 14px">购买失败</span>',
-            position: "middle",
-          });
+            position: 'middle'
+          })
         }
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
