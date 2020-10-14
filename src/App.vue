@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-view v-if="isRouterAlive" />
-    <div class="tabbar" v-show="showTabbar">
+    <!-- <div class="tabbar" v-show="showTabbar">
       <div class="tabbar-item" @click.stop="$router.push({name: 'coupons'})">
         <div class="icon">
           <img v-if="routeName === 'coupons'" src="./assets/img/base/buttom_lingquan_press@2x.png"/>
@@ -16,7 +16,7 @@
         </div>
         <div class="txt" :class="{active: routeName === 'my_coupons'}">我的券包</div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

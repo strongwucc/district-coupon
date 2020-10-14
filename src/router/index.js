@@ -43,7 +43,7 @@ export default new Router({
       name: 'coupon_detail',
       component: CouponDetail,
       meta: {
-        auth: 0,
+        auth: 1,
         title: '优惠券详情'
       }
     },

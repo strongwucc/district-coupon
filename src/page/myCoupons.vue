@@ -55,7 +55,7 @@
     <div class="no-coupon" v-if="coupons.length === 0 && !showLoading">
       <img src="../assets/img/my_coupons/empty_icon_youhuiquan@2x.png"/>
       <span class="notice">暂时没有优惠券哦</span>
-      <span class="btn" v-show="status === 'unused'" @click.stop="$router.push({path: '/coupons'})">去领取中心</span>
+      <span class="btn" v-show="status === 'unused'" @click.stop="$router.push({path: '/activity'})">去领取</span>
     </div>
   </div>
 </template>
