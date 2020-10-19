@@ -184,7 +184,7 @@
             <span class="label">短信验证码</span>
             <span class="value">
               <span class="input">
-                <input required="true" type="tel" v-model="code" />
+                <input required="true" type="tel" maxlength="4" v-model="code" />
               </span>
               <span class="send-btn" :class="{active: smsActive && clockStatus === false}" @click.stop="sendMessage">{{smsText}}</span>
             </span>
@@ -225,7 +225,7 @@ export default {
       buyMobile: '',
       code: '',
       codeKey: '',
-      totalSec: 10,
+      totalSec: 120,
       seconds: 0,
       clockStatus: false,
       smsTimer: null,
