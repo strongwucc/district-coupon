@@ -313,7 +313,7 @@ export default {
       if (this.code.length !== 4) {
         this.$vux.toast.show({
           type: 'text',
-          text: '<span style="font-size: 14px">请填写短信验证码</span>',
+          text: '<span style="font-size: 14px">请填写4位短信验证码</span>',
           position: 'middle'
         })
         return false
