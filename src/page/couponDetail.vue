@@ -180,6 +180,15 @@
               <input required="true" type="tel" v-model="buyMobile" />
             </span>
           </div>
+          <div class="buy-info-item code">
+            <span class="label">短信验证码</span>
+            <span class="value">
+              <span class="input">
+                <input required="true" type="tel" v-model="code" />
+              </span>
+              <span class="send-btn" :class="{active: smsActive && clockStatus === false}" @click.stop="sendMessage">{{smsText}}</span>
+            </span>
+          </div>
         </div>
       </confirm>
     </div>
@@ -214,10 +223,26 @@ export default {
       buyInfoTitle: '',
       buyCertNo: '',
       buyMobile: '',
+      code: '',
+      codeKey: '',
+      totalSec: 10,
+      seconds: 0,
+      clockStatus: false,
+      smsTimer: null,
       buyPcid: null
     }
   },
-  computed: {},
+  computed: {
+    smsActive: function () {
+      return /[0-9]{12}/.test(this.buyCertNo) && Valid.check_mobile(this.buyMobile)
+    },
+    smsText: function () {
+      if (this.clockStatus) {
+        return `${this.seconds} 后重新发送`
+      }
+      return '发送短信'
+    }
+  },
   watch: {},
   created () {
     if (this.$route.params.pcId) {
@@ -285,6 +310,14 @@ export default {
         })
         return false
       }
+      if (this.code.length !== 4) {
+        this.$vux.toast.show({
+          type: 'text',
+          text: '<span style="font-size: 14px">请填写短信验证码</span>',
+          position: 'middle'
+        })
+        return false
+      }
 
       this.buyInfoVisible = false
       this.receive(this.buyPcid)
@@ -301,7 +334,9 @@ export default {
           pcid: pcid,
           frontUrl: baseRedirectUrl + '/coupon.html',
           certNo: this.buyCertNo,
-          buyMobile: this.buyMobile
+          buyMobile: this.buyMobile,
+          codeKey: this.codeKey,
+          code: this.code
         })
         .then((res) => {
           this.$vux.loading.hide()
@@ -414,6 +449,54 @@ export default {
           })
         }
       })
+    },
+    /**
+     * 发送短信
+     */
+    sendMessage () {
+      if (this.clockStatus) {
+        return false
+      }
+      if (/[0-9]{12}/.test(this.buyCertNo) === false) {
+        this.$vux.toast.show({
+          type: 'text',
+          text: '<span style="font-size: 14px">请填写正确的烟草专卖证号</span>',
+          position: 'middle'
+        })
+        return false
+      }
+      if (Valid.check_mobile(this.buyMobile) === false) {
+        this.$vux.toast.show({
+          type: 'text',
+          text: '<span style="font-size: 14px">请填写正确的手机号</span>',
+          position: 'middle'
+        })
+        return false
+      }
+
+      this.$vux.loading.show({})
+      this.$http
+        .post(this.API.smsCode, { mobile: this.buyMobile })
+        .then((res) => {
+          this.$vux.loading.hide()
+          this.codeKey = res.key
+          this.startClock()
+        })
+    },
+    startClock () {
+      let vm = this
+      vm.seconds = vm.totalSec
+      vm.smsTimer && clearInterval(vm.smsTimer)
+      vm.clockStatus = true
+      vm.smsTimer = setInterval(function () {
+        if (vm.seconds <= 1) {
+          vm.smsTimer && clearInterval(vm.smsTimer)
+          vm.seconds = vm.totalSec
+          vm.clockStatus = false
+        } else {
+          vm.seconds -= 1
+        }
+      }, 1000)
     }
   }
 }
@@ -684,8 +767,37 @@ export default {
           font-size: 14px;
           border: none;
         }
-        &:first-child {
+        &:not(:last-child) {
           margin-bottom: 10px;
+        }
+        &.code {
+          .value {
+            border: none;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 0;
+            .input {
+              width: 100px;
+              border: 1px solid rgba(229, 229, 229, 1);
+              padding: 0 6px;
+              box-sizing: border-box;
+              margin-right: 20px;
+            }
+            .send-btn {
+              color: rgba(255, 255, 255, 1);
+              padding: 5px 10px;
+              border-radius: 4px;
+              background: #999999;
+              font-size: 12px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              &.active {
+                background: rgba(89, 175, 52, 1);
+              }
+            }
+          }
         }
       }
     }
